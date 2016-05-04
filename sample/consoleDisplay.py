@@ -2,20 +2,14 @@ import time
 from threading import Thread
 
 class ConsoleDisplay:
-	def __init__(self, menu):
-		self._menu = menu
-		self._prevFolder = None
-		self._prevItem = None
+	def __init__(self, menuOrController, action):
+		self._object = menuOrController
+		self._action = action
 		self._shouldStop = False
 	def _run(self):
 		while not self._shouldStop:
 			time.sleep(1)
-			folder = self._menu.folder()
-			item = self._menu.item()
-			if(folder is not self._prevFolder or item is not self._prevItem):
-				print("%s > %s [%s/%s]" % (folder.name(), item.name(), self._menu._currentIndex, len(self._menu._currentItems)))
-				self._prevFolder = folder
-				self._prevItem = item
+			self._action()
 	def open(self):
 		thread = Thread(target=self._run)
 		thread.setDaemon(True)
@@ -24,19 +18,20 @@ class ConsoleDisplay:
 		while cmd != "exit":
 			cmd = input();
 			if cmd == "x":
-				self._menu.moveBy(1)
+				self._object.moveBy(1)
 			elif cmd == "xx":
-				self._menu.moveBy(2)
+				self._object.moveBy(2)
 			elif cmd == "y":
-				self._menu.moveBy(-1)
+				self._object.moveBy(-1)
 			elif cmd == "yy":
-				self._menu.moveBy(-2)
+				self._object.moveBy(-2)
 			elif cmd == "s":
-				self._menu.select()
+				self._object.select()
 			elif cmd == "b":
-				self._menu.back()
+				self._object.back()
 			elif cmd == "r":
-				self._menu.reset()
+				if(hasattr(self.object.__class__, "reset")):
+					self._object.reset()
 			elif cmd == "exit":
 				self.close()
 	def close(self):

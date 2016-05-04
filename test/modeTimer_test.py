@@ -1,6 +1,10 @@
 import time
 from src.modeTimer import ModeTimer
 
+def test_construtorWithOptionalTimeout():
+	c = ModeTimer()
+	assert c._timeout == 5
+	
 def test_initial_shouldBeMainMode():
 	c = ModeTimer(1)
 	assert c.mode() == ModeTimer.MainMode

@@ -10,27 +10,27 @@ from threading import Timer
 class ModeTimer:
 	MainMode = 0
 	MenuMode = 1
-	def __init__(self, menuModeTimeout=5):
+	def __init__(self, timeout=5):
 		self._mode = ModeTimer.MainMode
-		self._modeTimer = None
-		self._menuModeTimeout = menuModeTimeout
+		self._timer = None
+		self._timeout = timeout
 	def mode(self):
 		return self._mode	
-	def _modeTimerFunction(self):
+	def _timerFunction(self):
 		# TODO lock "_mode"
 		self._mode = ModeTimer.MainMode
 	def update(self):
 		if(self._mode is ModeTimer.MainMode):
 			self._mode = ModeTimer.MenuMode
-			self._modeTimer = Timer(self._menuModeTimeout, self._modeTimerFunction)
-			self._modeTimer.setDaemon(True)
-			self._modeTimer.start()
+			self._timer = Timer(self._timeout, self._timerFunction)
+			self._timer.setDaemon(True)
+			self._timer.start()
 			return False
 		else:
-			if(self._modeTimer is not None):
-				self._modeTimer.cancel()
-				self._modeTimer = Timer(self._menuModeTimeout, self._modeTimerFunction)
-				self._modeTimer.setDaemon(True)
-				self._modeTimer.start()
+			if(self._timer is not None):
+				self._timer.cancel()
+				self._timer = Timer(self._timeout, self._timerFunction)
+				self._timer.setDaemon(True)
+				self._timer.start()
 				return True
 			return True

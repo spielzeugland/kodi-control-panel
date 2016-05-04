@@ -1,5 +1,4 @@
 from src.menu import Menu
-from consoleDisplay import ConsoleDisplay
 
 class Action:
 	def __init__(self, name):
@@ -32,5 +31,5 @@ folder3 = Folder("Folder 3", [a1, a2, a3])
 emptyFolder = Folder("Folder with no entries", [])
 mainFolder = Folder("Main Menu", [folder1, folder2, folder3, emptyFolder])
 
-menu = Menu(mainFolder, backItem)
-ConsoleDisplay(menu).open()
+sampleMenu = Menu(mainFolder, backItem)
+
