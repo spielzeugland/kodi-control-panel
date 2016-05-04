@@ -3,7 +3,7 @@ from src.menu import Menu
 class Action:
 	def __init__(self, name):
 		self._name = name
-	def name(self):
+	def name(self, menu):
 		return self._name
 	def run(self):
 		pass

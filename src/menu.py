@@ -37,8 +37,7 @@ class Menu:
 		entry = self._currentItems[self._currentIndex]
 		if(hasattr(entry.__class__, "run") and callable(getattr(entry.__class__, "run"))):
 			# TODO error handling
-			entry.run()
-			# TODO close menu afterwards?
+			entry.run(self)
 		else:
 			self._menuStack.append([self._currentFolder, self._currentIndex])
 			self._setCurrentFolder(entry)

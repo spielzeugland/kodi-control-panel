@@ -17,7 +17,9 @@ class ConsoleDisplay:
 				self._prevFolder = folder
 				self._prevItem = item
 	def open(self):
-		Thread(target=self._run).start()
+		thread = Thread(target=self._run)
+		thread.setDaemon(True)
+		thread.start()
 		cmd = ""
 		while cmd != "exit":
 			cmd = input();
