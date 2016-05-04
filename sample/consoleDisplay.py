@@ -30,7 +30,7 @@ class ConsoleDisplay:
 			elif cmd == "b":
 				self._object.back()
 			elif cmd == "r":
-				if(hasattr(self.object.__class__, "reset")):
+				if(hasattr(self._object.__class__, "reset")):
 					self._object.reset()
 			elif cmd == "exit":
 				self.close()

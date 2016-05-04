@@ -7,7 +7,7 @@ class Menu():
 		self.selectCnt += 1
 	def back(self):
 		self.backCnt += 1
-	def moveBy(self):
+	def moveBy(self, offset):
 		self.moveByCnt += 1
 
 class Player:

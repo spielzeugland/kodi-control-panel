@@ -51,12 +51,12 @@ def test_menuMode_backShouldDelegateToMenu():
 def test_mainMode_moveByShouldNotDelegateToMenu():
 	menu = mocks.Menu()
 	c = Controller(player, menu, mocks.inMainMode)
-	c.moveBy()
+	c.moveBy(1)
 	assert menu.moveByCnt == 0
 
 def test_menuMode_moveByShouldDelegateToMenu():
 	menu = mocks.Menu()
 	c = Controller(player, menu, mocks.inMenuMode)
-	c.moveBy()
+	c.moveBy(1)
 	assert menu.moveByCnt == 1
 

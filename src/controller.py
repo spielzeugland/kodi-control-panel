@@ -1,5 +1,5 @@
 # TODO adapt proper python module structure (test config currently requires "src.")
-from src.modeTimer import ModeTimer
+from modeTimer import ModeTimer
 
 class Controller:
 	MainMode = ModeTimer.MainMode
@@ -11,9 +11,9 @@ class Controller:
 	def select(self):
 		if(self._timer.update()):
 			self.menu.select()
-	def moveBy(self):
+	def moveBy(self, offset):
 		if(self._timer.update()):
-			self.menu.moveBy()
+			self.menu.moveBy(offset)
 	def back(self):
 		if(self._timer.update()):
 			self.menu.back()

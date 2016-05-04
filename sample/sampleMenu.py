@@ -27,7 +27,7 @@ folder2 = Folder("Folder 2", [folder2a, folder2b])
 a1 = Action("Action 1")
 a2 = Action("Action 2")
 a3 = Action("Action 3")
-folder3 = Folder("Folder 3", [a1, a2, a3])		
+folder3 = Folder("Folder 3", [a1, a2, a3])
 emptyFolder = Folder("Folder with no entries", [])
 mainFolder = Folder("Main Menu", [folder1, folder2, folder3, emptyFolder])
 

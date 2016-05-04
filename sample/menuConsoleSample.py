@@ -6,6 +6,10 @@ prevFolder = None
 prevItem = None
 
 def action():
+	global menu
+	global prevFolder
+	global prevItem
+	
 	folder = menu.folder()
 	item = menu.item()
 	if(folder is not prevFolder or item is not prevItem):
@@ -14,4 +18,4 @@ def action():
 		prevItem = item
 
 console = ConsoleDisplay(menu, action)
-console.start()
+console.open()
