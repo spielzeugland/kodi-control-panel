@@ -1,6 +1,9 @@
+import os, sys
+sys.path.insert(0, os.path.abspath('../src'))
+
 from consoleDisplay import ConsoleDisplay
 from sampleMenu import sampleMenu
-from src.controller import Controller
+from controller import Controller
 
 menu = sampleMenu
 controller = Controller(None, sampleMenu)

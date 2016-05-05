@@ -1,5 +1,5 @@
 from sniffer.api import *
-import os, termstyle
+import os, termstyle, sys
 
 # colors
 pass_fg_color = termstyle.green

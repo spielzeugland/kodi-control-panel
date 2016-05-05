@@ -1,4 +1,7 @@
-from src.menu import Menu
+import os, sys
+sys.path.insert(0, os.path.abspath('../src'))
+
+from menu import Menu
 
 class Action:
 	def __init__(self, name):
