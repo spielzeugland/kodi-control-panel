@@ -36,3 +36,12 @@ mainFolder = Folder("Main Menu", [folder1, folder2, folder3, emptyFolder])
 
 sampleMenu = Menu(mainFolder, backItem)
 
+cd = Folder("CD", [])
+favs = Folder("Favourits", [])
+webradio = Folder("Online radio", [])
+settings = Folder("Settings", [])
+shutdown = Action("Now")
+reboot = Action("Restart")
+end = Folder("Shutdown", [shutdown, reboot])
+kodiMainFolder = Folder("Main", [cd, favs, webradio, settings, end])
+kodiMenu = Menu(kodiMainFolder, backItem)

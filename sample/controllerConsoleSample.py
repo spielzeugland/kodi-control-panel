@@ -2,7 +2,7 @@ import os, sys
 sys.path.insert(0, os.path.abspath('../src'))
 
 from consoleDisplay import ConsoleDisplay
-from sampleMenu import sampleMenu
+from sampleMenu import kodiMenu as sampleMenu
 from controller import Controller, Mode
 
 menu = sampleMenu
@@ -23,7 +23,7 @@ def action():
 	folder = menu.folder()
 	item = menu.item()
 	if(mode is not prevMode or folder is not prevFolder or item is not prevItem):
-		if(mode is Mode.Main):
+		if(mode is Mode.Player):
 			print("Player")
 		else:
 			print("Menu >>> %s > %s [%s/%s]" % (folder.name(), item.name(), menu._currentIndex, len(menu._currentItems)))
