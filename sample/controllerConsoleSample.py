@@ -2,19 +2,27 @@ import os, sys
 sys.path.insert(0, os.path.abspath('../src'))
 
 from consoleDisplay import ConsoleDisplay
-from sampleMenu import kodiMenu as sampleMenu
+from sampleMenu import kodiMainFolder as menuMainFolder
+from menu import Menu, BackItem
 from controller import Controller, Mode
 
-menu = sampleMenu
-controller = Controller(None, sampleMenu)
+customBackItem = BackItem()
+menu = Menu(menuMainFolder, customBackItem)
+controller = Controller(None, menu)
+
+def backItemRun(menu):
+	if(menu.folder() is menuMainFolder):
+		controller.exitMenuMode()
+	else:
+		menu.back()
+
+customBackItem.run = backItemRun
 
 prevMode = None
 prevFolder = None
 prevItem = None
 
 def action():
-	global menu
-	global controller
 	global prevMode
 	global prevFolder
 	global prevItem

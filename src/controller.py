@@ -25,3 +25,5 @@ class Controller:
 			return Mode.Player
 		else:
 			return Mode.Menu
+	def exitMenuMode(self):
+		self._timer.cancel()

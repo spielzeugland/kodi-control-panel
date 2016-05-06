@@ -43,3 +43,10 @@ def test_menuMode_updateShouldBeExtendMenuMode():
 	c.update()
 	time.sleep(0.7)
 	assert c.isMainMode() is True
+	
+def test_menuMode_cancelShouldExitMenuMode():
+	c = ModeTimer(1)
+	c.update()
+	c.cancel()
+	assert c. isMainMode() is True
+

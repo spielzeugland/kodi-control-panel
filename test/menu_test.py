@@ -1,20 +1,5 @@
 from src.menu import Menu
-
-class Action:
-	def __init__(self, name):
-		self._name = name
-	def name(self, menu):
-		return self._name
-	def run(self):
-		pass
-class Folder:
-	def __init__(self, name, items):
-		self._name = name
-		self._items = items
-	def name(self):
-		return self._name
-	def items(self):
-		return self._items
+from mocks import Folder, Action
 
 backItem = Action("<Back>")
 		
@@ -108,6 +93,12 @@ def test_moveByMinus1_withBackItem_shouldNotFailForEmptyFolder():
 	menu = Menu(emptyFolder, backItem)
 	menu.moveBy(-1)
 	assert menu.item() is backItem
+
+def test_select_shouldExecuteBackItem():
+	menu = Menu(mainFolder, backItem)
+	menu.moveBy(-1).select()
+	assert backItem.runCnt == 1
+
 
 def test_select_shouldOpenFolder():
 	menu = Menu(mainFolder)

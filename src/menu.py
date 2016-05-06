@@ -1,28 +1,68 @@
+from threading import Thread
+
+class BackItem:
+	def __init__(self, text=".."):
+		self._text = text
+	def name(self):
+		return self._text
+	def run(self, menu):
+		menu.back()
+
 class _EmptyItem:
-	def name():
+	def name(self):
 		return "<Empty>"
-	def items():
-		return []
+	def run(self, menu):
+		pass
+
+class _LoadingItem:
+	def name(self):
+		return "Loading..."
+	def run(self, menu):
+		pass
+
+class _ItemLoader:
+	def _run(self):
+		# TODO error handling e.g. pass back item with error message
+		items = self._folder.items()
+		self._menu._updateItemsForFolder(self._folder, items)
+	def loadItems(self, menu, folder):
+		self._menu = menu
+		self._folder = folder
+		thread = Thread(target=self._run)
+		thread.setDaemon(True)
+		thread.start()
 
 class Menu:
-	def __init__(self, root, backItem = None):
+	def __init__(self, root, backItem = None, itemLoader = _ItemLoader):
 		self._root = root
 		self._menuStack = []
-		self._emptyItem = _EmptyItem()
 		self._backItem = backItem
+		self._emptyItem = _EmptyItem()
+		self._loadingItem = _LoadingItem()
+		self._itemLoader = itemLoader
 		self._setCurrentFolder(root)
 	def _setCurrentFolder(self, folder, index = 0):
 		self._currentFolder = folder
 		if(hasattr(folder.__class__, "items") and callable(getattr(folder.__class__, "items"))):
-			self._currentItems = folder.items()
-			if(index > len(self._currentItems)):
-				self._currentIndex = 0
+			if(hasattr(folder.__class__, "isDynamic") and callable(getattr(folder.__class__, "isDynamic"))):
+				self._updateItemsForFolder(folder, [self._loadingItem])
+				self._itemLoader().loadItems(self, folder)
+				return
 			else:
-				self._currentIndex = index
+				self._updateItemsForFolder(folder, folder.items(), index)
 		else:
 			self._currentItems = []
 			self._currentIndex = 0
 			# TODO log + message
+	def _updateItemsForFolder(self, folder, items, index=0):
+		if(self._currentFolder is not folder):
+			return
+		# TODO check type of items to be a list
+		self._currentItems = items
+		if(index > len(self._currentItems)):
+			self._currentIndex = 0
+		else:
+			self._currentIndex = index
 	def moveBy(self, offset):
 		length = len(self._currentItems)
 		if(self._backItem is not None):
@@ -33,12 +73,13 @@ class Menu:
 	def select(self):
 		length = len(self._currentItems)
 		if(self._currentIndex == length and self._backItem is not None):
-			self.back()
-			return self
-		entry = self._currentItems[self._currentIndex]
+			entry = self._backItem
+		else:
+			entry = self._currentItems[self._currentIndex]
 		if(hasattr(entry.__class__, "run") and callable(getattr(entry.__class__, "run"))):
 			# TODO error handling
 			entry.run(self)
+			return self
 		else:
 			self._menuStack.append([self._currentFolder, self._currentIndex])
 			self._setCurrentFolder(entry)

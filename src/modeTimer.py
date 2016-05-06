@@ -25,3 +25,8 @@ class ModeTimer:
 				self._timer.start()
 				return True
 			return True
+	def cancel(self):
+		if(self._timer is not None):
+			self._timer.cancel()
+		self._mainMode = True
+			

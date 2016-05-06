@@ -6,7 +6,6 @@ prevFolder = None
 prevItem = None
 
 def action():
-	global menu
 	global prevFolder
 	global prevItem
 	
