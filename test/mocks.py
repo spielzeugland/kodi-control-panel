@@ -14,16 +14,15 @@ class Player:
 	pass
 
 class Timer():
-	def __init__(self, interactionAllowed=False, mode=None):
-		self._interactionAllowed = interactionAllowed
-		self._mode = mode
-		self.modeCnt = 0
+	def __init__(self, mainMode=True):
+		self._mainMode = mainMode
+		self.isMainModeCnt = 0
 	def update(self):
-		return self._interactionAllowed
-	def mode(self):
-		self.modeCnt += 1 
-		return self._mode
+		return not self._mainMode
+	def isMainMode(self):
+		self.isMainModeCnt += 1 
+		return self._mainMode
 
-inMainMode = Timer(False)
-inMenuMode = Timer(True)
+timerInMainMode = Timer(mainMode = True)
+timerInMenuMode = Timer(mainMode = False)
 

@@ -1,9 +1,12 @@
-# TODO adapt proper python module structure (test config currently requires "src.")
+from enum import Enum, unique
 from modeTimer import ModeTimer
 
+@unique
+class Mode(Enum):
+	Player = 0
+	Menu = 1
+
 class Controller:
-	MainMode = ModeTimer.MainMode
-	MenuMode = ModeTimer.MenuMode
 	def __init__(self, player, menu, timer=ModeTimer()):
 		self.player = player
 		self.menu = menu
@@ -18,5 +21,7 @@ class Controller:
 		if(self._timer.update()):
 			self.menu.back()
 	def mode(self):
-		return self._timer.mode()
-
+		if (self._timer.isMainMode()):
+			return Mode.Player
+		else:
+			return Mode.Menu

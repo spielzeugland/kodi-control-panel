@@ -1,4 +1,4 @@
-from context import Controller
+from context import Controller, Mode
 import mocks
 
 player = mocks.Player()
@@ -12,51 +12,51 @@ def test_constructor():
 def test_constructorWithOptionalTimer():
 	c = Controller(player, menu)
 
-def test_modeShouldReturnMainModeFromTimer():
-	timer = mocks.Timer(mode=Controller.MainMode)
+def test_modeShouldReturnMainModeDependingOnTimerMode():
+	timer = mocks.Timer(mainMode = True)
 	c = Controller(player, menu, timer)
-	assert c.mode() == Controller.MainMode
-	assert timer.modeCnt == 1
+	assert c.mode() is Mode.Player
+	assert timer.isMainModeCnt == 1
 
-def test_modeShouldReturnMenuModeFromTimer():
-	timer = mocks.Timer(mode=Controller.MenuMode)
+def test_modeShouldReturnMenuModeDependingOnTimerMode():
+	timer = mocks.Timer(mainMode = False)
 	c = Controller(player, menu, timer)
-	assert c.mode() == Controller.MenuMode
-	assert timer.modeCnt == 1
+	assert c.mode() is Mode.Menu
+	assert timer.isMainModeCnt == 1
 
-def test_mainMode_selectShouldNotDelegateToMenu():
+def test_playerMode_selectShouldNotDelegateToMenu():
 	menu = mocks.Menu()
-	c = Controller(player, menu, mocks.inMainMode)
+	c = Controller(player, menu, mocks.timerInMainMode)
 	c.select()
 	assert menu.selectCnt == 0
 
 def test_menuMode_selectShouldDelegateToMenu():
 	menu = mocks.Menu()
-	c = Controller(player, menu, mocks.inMenuMode)
+	c = Controller(player, menu, mocks.timerInMenuMode)
 	c.select()
 	assert menu.selectCnt == 1
 
-def test_mainMode_backShouldNotDelegateToMenu():
+def test_playerMode_backShouldNotDelegateToMenu():
 	menu = mocks.Menu()
-	c = Controller(player, menu, mocks.inMainMode)
+	c = Controller(player, menu, mocks.timerInMainMode)
 	c.back()
 	assert menu.backCnt == 0
 
 def test_menuMode_backShouldDelegateToMenu():
 	menu = mocks.Menu()
-	c = Controller(player, menu, mocks.inMenuMode)
+	c = Controller(player, menu, mocks.timerInMenuMode)
 	c.back()
 	assert menu.backCnt == 1
 
-def test_mainMode_moveByShouldNotDelegateToMenu():
+def test_playerMode_moveByShouldNotDelegateToMenu():
 	menu = mocks.Menu()
-	c = Controller(player, menu, mocks.inMainMode)
+	c = Controller(player, menu, mocks.timerInMainMode)
 	c.moveBy(1)
 	assert menu.moveByCnt == 0
 
 def test_menuMode_moveByShouldDelegateToMenu():
 	menu = mocks.Menu()
-	c = Controller(player, menu, mocks.inMenuMode)
+	c = Controller(player, menu, mocks.timerInMenuMode)
 	c.moveBy(1)
 	assert menu.moveByCnt == 1
 

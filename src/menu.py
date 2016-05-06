@@ -3,9 +3,7 @@ class _EmptyItem:
 		return "<Empty>"
 	def items():
 		return []
-# Menu
-#  Action: name, run
-#  Folder: name, items
+
 class Menu:
 	def __init__(self, root, backItem = None):
 		self._root = root
@@ -15,9 +13,12 @@ class Menu:
 		self._setCurrentFolder(root)
 	def _setCurrentFolder(self, folder, index = 0):
 		self._currentFolder = folder
-		self._currentIndex = index
 		if(hasattr(folder.__class__, "items") and callable(getattr(folder.__class__, "items"))):
 			self._currentItems = folder.items()
+			if(index > len(self._currentItems)):
+				self._currentIndex = 0
+			else:
+				self._currentIndex = index
 		else:
 			self._currentItems = []
 			self._currentIndex = 0
