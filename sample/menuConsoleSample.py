@@ -11,7 +11,7 @@ def action():
 	
 	folder = menu.folder()
 	item = menu.item()
-	if(folder is not prevFolder or item is not prevItem):
+	if folder is not prevFolder or item is not prevItem:
 		print("%s > %s [%s/%s]" % (folder.name(), item.name(), menu._currentIndex, len(menu._currentItems)))
 		prevFolder = folder
 		prevItem = item

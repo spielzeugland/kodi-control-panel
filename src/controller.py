@@ -12,16 +12,16 @@ class Controller:
 		self.menu = menu
 		self._timer = timer
 	def select(self):
-		if(self._timer.update()):
+		if self._timer.update():
 			self.menu.select()
 	def moveBy(self, offset):
-		if(self._timer.update()):
+		if self._timer.update():
 			self.menu.moveBy(offset)
 	def back(self):
-		if(self._timer.update()):
+		if self._timer.update():
 			self.menu.back()
 	def mode(self):
-		if (self._timer.isMainMode()):
+		if self._timer.isMainMode():
 			return Mode.Player
 		else:
 			return Mode.Menu

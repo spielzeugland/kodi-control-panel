@@ -11,14 +11,14 @@ class ModeTimer:
 		# TODO lock "_mainMode"
 		self._mainMode = True
 	def update(self):
-		if(self._mainMode is True):
+		if self._mainMode is True:
 			self._mainMode = False
 			self._timer = Timer(self._timeout, self._timerFunction)
 			self._timer.setDaemon(True)
 			self._timer.start()
 			return False
 		else:
-			if(self._timer is not None):
+			if self._timer is not None:
 				self._timer.cancel()
 				self._timer = Timer(self._timeout, self._timerFunction)
 				self._timer.setDaemon(True)
@@ -26,7 +26,7 @@ class ModeTimer:
 				return True
 			return True
 	def cancel(self):
-		if(self._timer is not None):
+		if self._timer is not None:
 			self._timer.cancel()
 		self._mainMode = True
-			
+

@@ -30,8 +30,8 @@ def action():
 	mode = controller.mode()
 	folder = menu.folder()
 	item = menu.item()
-	if(mode is not prevMode or folder is not prevFolder or item is not prevItem):
-		if(mode is Mode.Player):
+	if mode is not prevMode or folder is not prevFolder or item is not prevItem:
+		if mode is Mode.Player:
 			print("Player")
 		else:
 			print("Menu >>> %s > %s [%s/%s]" % (folder.name(), item.name(), menu._currentIndex, len(menu._currentItems)))

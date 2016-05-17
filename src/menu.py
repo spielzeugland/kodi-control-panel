@@ -43,8 +43,8 @@ class Menu:
 		self._setCurrentFolder(root)
 	def _setCurrentFolder(self, folder, index = 0):
 		self._currentFolder = folder
-		if(hasattr(folder.__class__, "items") and callable(getattr(folder.__class__, "items"))):
-			if(hasattr(folder.__class__, "isDynamic") and callable(getattr(folder.__class__, "isDynamic"))):
+		if hasattr(folder.__class__, "items") and callable(getattr(folder.__class__, "items")):
+			if hasattr(folder.__class__, "isDynamic") and callable(getattr(folder.__class__, "isDynamic")):
 				self._updateItemsForFolder(folder, [self._loadingItem])
 				self._itemLoader().loadItems(self, folder)
 				return
@@ -55,28 +55,28 @@ class Menu:
 			self._currentIndex = 0
 			# TODO log + message
 	def _updateItemsForFolder(self, folder, items, index=0):
-		if(self._currentFolder is not folder):
+		if self._currentFolder is not folder:
 			return
 		# TODO check type of items to be a list
 		self._currentItems = items
-		if(index > len(self._currentItems)):
+		if index > len(self._currentItems):
 			self._currentIndex = 0
 		else:
 			self._currentIndex = index
 	def moveBy(self, offset):
 		length = len(self._currentItems)
-		if(self._backItem is not None):
+		if self._backItem is not None:
 			length += 1
 		if length > 0:
 			self._currentIndex = (self._currentIndex + offset) % length
 		return self
 	def select(self):
 		length = len(self._currentItems)
-		if(self._currentIndex == length and self._backItem is not None):
+		if self._currentIndex == length and self._backItem is not None:
 			entry = self._backItem
 		else:
 			entry = self._currentItems[self._currentIndex]
-		if(hasattr(entry.__class__, "run") and callable(getattr(entry.__class__, "run"))):
+		if hasattr(entry.__class__, "run") and callable(getattr(entry.__class__, "run")):
 			# TODO error handling
 			entry.run(self)
 			return self
@@ -85,7 +85,7 @@ class Menu:
 			self._setCurrentFolder(entry)
 			return self
 	def back(self):
-		if(len(self._menuStack) > 0):
+		if len(self._menuStack) > 0:
 			parent = self._menuStack.pop()
 			self._setCurrentFolder(parent[0], parent[1])
 		return self
@@ -97,8 +97,8 @@ class Menu:
 		return self._currentFolder
 	def item(self):
 		length = len(self._currentItems)
-		if(self._currentIndex == length and self._backItem is not None):
+		if self._currentIndex == length and self._backItem is not None:
 			return self._backItem
-		elif(length > 0):
+		elif length > 0:
 			return self._currentItems[self._currentIndex]
 		return self._emptyItem
