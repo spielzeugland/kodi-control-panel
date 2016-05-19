@@ -8,6 +8,27 @@ class BackItem:
 	def run(self, menu):
 		menu.back()
 
+class Folder:
+	def __init__(self, name):
+		self._name = name
+	def name(self):
+		return self._name
+	
+class DynamicFolder():
+	def __init__(self, name):
+		self._name = name
+		self._items = None
+	def name(self):
+		return self._name
+	def isDynamic(self):
+		return self._items is None
+	def items(self):
+		if self.isDynamic():
+			self._items = self._loadItems()
+		return self._items
+	def _loadItems(self):
+		return []
+
 class _EmptyItem:
 	def name(self):
 		return "<Empty>"

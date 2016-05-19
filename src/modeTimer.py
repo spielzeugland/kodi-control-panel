@@ -8,7 +8,6 @@ class ModeTimer:
 	def isMainMode(self):
 		return self._mainMode	
 	def _timerFunction(self):
-		# TODO lock "_mainMode"
 		self._mainMode = True
 	def update(self):
 		if self._mainMode is True:
