@@ -1,14 +1,14 @@
 import json
 
 def addFavourite(kodi, name ,url):
-	fav = "{\"type\": \"media\", \"title\": \"" + name + "\", \"path\": \"" + url + "\"}"
+	fav = "{{\"type\": \"media\", \"title\": \"{0}\", \"path\": \"{1}\"}}".format(name, url)
 	if len(kodi._favs) > 0:
 		kodi._favs += ","
 	kodi._favs += fav
 
 def addAddon(kodi, name, addonId):
-	addon = "{\"addonid\": \"" + addonId + "\", \"type\": \"" + addonId + "\"}"
-	addonDetails = "{\"type\": \"" + addonId + "\", \"addonid\": \"" + addonId + "\", \"name\": \"" + name + "\"}"
+	addon = "{{\"addonid\": \"{0}\", \"type\": \"{0}\"}}".format(addonId)
+	addonDetails = "{{\"type\": \"{0}\", \"addonid\": \"{0}\", \"name\": \"{1}\"}}".format(addonId, name)
 	kodi._addons[addonId] = [addon, addonDetails]
 	if len(kodi._allAddons) > 0:
 		kodi._allAddons += ","
@@ -21,7 +21,7 @@ def addFile(kodi, folderUrl, name, url):
 	_add(kodi, folderUrl, name, url, "file")
 
 def _add(kodi, folderUrl, name, url, fileType):
-	file = "{\"file\": \"" + url + "\", \"filetype\": \"" + fileType + "\", \"label\": \"" + name + "\"}"
+	file = "{{\"file\": \"{0}\", \"filetype\": \"{1}\", \"label\": \"{2}\"}}".format(url, fileType, name)
 	if folderUrl not in kodi._files:
 		kodi._files[folderUrl] = ""
 	if len(kodi._files[folderUrl]) > 0:
@@ -36,19 +36,19 @@ class Kodi:
 		self._favs = ""
 		self._playUrl = None
 	def getAddons(self):
-		asJson = "{\"addons\" : [" + self._allAddons + "]}"
+		asJson = "{{\"addons\" : [{0}]}}".format(self._allAddons)
 		return json.loads(asJson)["addons"]
 	def getFavourites(self):
-		asJson = "{\"favs\" : [" + self._favs + "]}"
+		asJson = "{{\"favs\" : [{0}]}}".format(self._favs)
 		return json.loads(asJson)["favs"]
 	def getAddonDetails(self, addonId):
 		if addonId in self._addons:
-			asJson = "{\"addon\" : " + self._addons[addonId][1] + "}"
+			asJson = "{{\"addon\" : {0}}}".format(self._addons[addonId][1])
 			return json.loads(asJson)["addon"]
 		return []
 	def getFiles(self, url):
 		if url in self._files:
-			asJson = "{\"files\": [" + self._files[url] + "]}"
+			asJson = "{{\"files\": [{0}]}}".format(self._files[url])
 			return json.loads(asJson)["files"]
 		return []
 	def play(self, url):

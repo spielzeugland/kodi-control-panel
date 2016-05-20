@@ -102,7 +102,8 @@ class Menu:
 			entry.run(self)
 			return self
 		else:
-			self._menuStack.append([self._currentFolder, self._currentIndex])
+			stackTuple = (self._currentFolder, self._currentIndex)
+			self._menuStack.append(stackTuple)
 			self._setCurrentFolder(entry)
 			return self
 	def back(self):

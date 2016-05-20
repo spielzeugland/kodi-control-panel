@@ -14,7 +14,7 @@ class UrlFolder(DynamicFolder):
 	def __init__(self, kodi, name, url):
 		self._kodi = kodi
 		self._url = url
-		DynamicFolder.__init__(self, name)
+		super().__init__(name)
 	def _loadItems(self):
 		items = []
 		files = self._kodi.getFiles(self._url)
@@ -35,7 +35,7 @@ class UrlFolder(DynamicFolder):
 class AddonFolder(DynamicFolder):
 	def __init__(self, kodi, name = "Addons"):
 		self._kodi = kodi
-		DynamicFolder.__init__(self, name)
+		super().__init__(name)
 	def _loadItems(self):
 		items = []
 		addons = self._kodi.getAddons()
@@ -43,7 +43,7 @@ class AddonFolder(DynamicFolder):
 			addonId = addon["addonid"]
 			details = self._kodi.getAddonDetails(addonId)
 			name = details["name"]
-			url = "plugin://" + addonId + "/"
+			url = "plugin://{0}/".format(addonId)
 			folder = UrlFolder(self._kodi, name, url)
 			items.append(folder)
 		return items
@@ -51,7 +51,7 @@ class AddonFolder(DynamicFolder):
 class FavouritesFolder(DynamicFolder):
 	def __init__(self, kodi, name = "Favourites"):
 		self._kodi = kodi
-		DynamicFolder.__init__(self, name)
+		super().__init__(name)
 	def _loadItems(self):
 		items = []
 		favs = self._kodi.getFavourites()
