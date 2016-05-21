@@ -1,4 +1,5 @@
 import json
+import time
 
 def addFavourite(kodi, name ,url):
 	fav = "{{\"type\": \"media\", \"title\": \"{0}\", \"path\": \"{1}\"}}".format(name, url)
@@ -27,6 +28,9 @@ def _add(kodi, folderUrl, name, url, fileType):
 	if len(kodi._files[folderUrl]) > 0:
 		kodi._files[folderUrl] += ","
 	kodi._files[folderUrl] += file
+
+def addPlayDelay(kodi, delay):
+	kodi._playDelay = delay
 	
 class Kodi:
 	def __init__(self):
@@ -35,6 +39,8 @@ class Kodi:
 		self._files = {}
 		self._favs = ""
 		self._playUrl = None
+		self._playCnt = 0
+		self._playDelay = 0
 	def getAddons(self):
 		asJson = "{{\"addons\" : [{0}]}}".format(self._allAddons)
 		return json.loads(asJson)["addons"]
@@ -52,6 +58,8 @@ class Kodi:
 			return json.loads(asJson)["files"]
 		return []
 	def play(self, url):
+		self._playCnt += 1
 		self._playUrl = url
+		time.sleep(self._playDelay)
 	def playWasCalledWith(self, url):
 		return self._playUrl == url

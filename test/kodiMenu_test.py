@@ -1,5 +1,6 @@
 from context import AddonFolder, UrlFolder, UrlFile, FavouritesFolder
 import mocks 
+import time
 
 def test_UrlFolder_name_shouldReturnName():
 	folder = UrlFolder(mocks.kodi.Kodi(), "newName", "url")
@@ -43,7 +44,6 @@ def test_UrlFolder_isDynamic_shouldBeTrueInitially():
 	kodi = mocks.kodi.Kodi()
 	folder = UrlFolder(kodi, "name", "url")
 	assert folder.isDynamic() is True
-
 
 def test_UrlFolder_isDynamic_shouldBeFalse():
 	kodi = mocks.kodi.Kodi()
@@ -146,5 +146,15 @@ def test_UrlFile_run_shouldCallPlayOnKodi():
 	kodi = mocks.kodi.Kodi()
 	file = UrlFile(kodi, "myFileName", "myFileUrl")
 	file.run(None)
+	time.sleep(0.1)
 	assert kodi.playWasCalledWith("myFileUrl") is True
+
+def test_UrlFile_run_shouldCallPlayOnKodiOnlyOnceIfCurrentlyBusy():
+	kodi = mocks.kodi.Kodi()
+	mocks.kodi.addPlayDelay(kodi, 0.1)
+	file = UrlFile(kodi, "myFileName", "myFileUrl")
+	file.run(None)
+	file.run(None)
+	time.sleep(0.3)
+	assert kodi._playCnt == 1
 

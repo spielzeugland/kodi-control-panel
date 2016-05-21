@@ -8,7 +8,7 @@ class ConsoleDisplay:
 		self._shouldStop = False
 	def _run(self):
 		while not self._shouldStop:
-			time.sleep(1)
+			time.sleep(0.5)
 			self._action()
 	def open(self):
 		thread = Thread(target=self._run)

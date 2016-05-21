@@ -1,14 +1,22 @@
 from menu import DynamicFolder
+from threading import Thread
 
 class UrlFile():
 	def __init__(self, kodi, name, url):
 		self._kodi = kodi
 		self._name = name
 		self._url = url
+		self._thread = None
 	def name(self):
 		return self._name
 	def run(self, menu):
+		if self._thread is None:
+			self._thread = Thread(target=self._run)
+			self._thread.setDaemon(True)
+			self._thread.start()
+	def _run(self):
 		self._kodi.play(self._url)
+		self._thread = None
 
 class UrlFolder(DynamicFolder):
 	def __init__(self, kodi, name, url):

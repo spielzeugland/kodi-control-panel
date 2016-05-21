@@ -16,7 +16,7 @@ menu = Menu(mainFolder, customBackItem)
 controller = Controller(None, menu)
 
 def backItemRun(menu):
-	if(menu.folder() is menuMainFolder):
+	if(menu.folder() is mainFolder):
 		controller.exitMenuMode()
 	else:
 		menu.back()
@@ -37,9 +37,9 @@ def action():
 	item = menu.item()
 	if mode is not prevMode or folder is not prevFolder or item is not prevItem:
 		if mode is Mode.Player:
-			print("Player")
+			print("Playing: {0}".format(kodi.getCurrentItem()))
 		else:
-			print("Menu >>> %s > %s [%s/%s]" % (folder.name(), item.name(), menu._currentIndex, len(menu._currentItems)))
+			print("Menu: {0} > {1} [{2}/{3}]".format(folder.name(), item.name(), menu._currentIndex, len(menu._currentItems)))
 		prevMode = mode
 		prevFolder = folder
 		prevItem = item

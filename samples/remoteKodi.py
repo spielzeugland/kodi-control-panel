@@ -20,3 +20,12 @@ class Kodi:
 	def play(self, url):
 		params = {"file" : url}
 		response = server.Player.Open(item=params)
+	def getCurrentItem(self):
+		players = server.Player.GetActivePlayers()
+		if len(players) > 0:
+			playerid = players[0]["playerid"]
+			items = server.Player.GetItem(properties=["title", "album", "artist", "season", "episode", "duration", "showtitle", "tvshowid", "file", "streamdetails"], playerid=playerid)
+			print(items)
+			return items["item"]["label"]
+		return None
+
