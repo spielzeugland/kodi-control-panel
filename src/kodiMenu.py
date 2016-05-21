@@ -1,4 +1,4 @@
-from menu import DynamicFolder
+from menu import DynamicFolder, Action
 from threading import Thread
 
 class UrlFile():
@@ -70,3 +70,16 @@ class FavouritesFolder(DynamicFolder):
 			items.append(folder)
 		return items
 
+class ShutdownAction(Action):
+	def __init__(self, kodi, text=".."):
+		self._kodi = kodi
+		super().__init__(text)
+	def run(self, menu):
+		kodi.shutdown()
+
+class RebootAction(Action):
+	def __init__(self, kodi, text="Reboot"):
+		self._kodi = kodi
+		super().__init__(text)
+	def run(self, menu):
+		kodi.reboot()

@@ -1,10 +1,16 @@
 from threading import Thread
 
-class BackItem:
-	def __init__(self, text=".."):
-		self._text = text
+class Action:
+	def __init__(self, name):
+		self._name = name
 	def name(self):
-		return self._text
+		return self._name
+	def run(self, menu):
+		pass
+
+class BackItem(Action):
+	def __init__(self, name=".."):
+		super().__init__(name)
 	def run(self, menu):
 		menu.back()
 
@@ -13,13 +19,13 @@ class Folder:
 		self._name = name
 	def name(self):
 		return self._name
-	
-class DynamicFolder():
+	def items(self):
+		return []
+
+class DynamicFolder(Folder):
 	def __init__(self, name):
-		self._name = name
 		self._items = None
-	def name(self):
-		return self._name
+		super().__init__(name)
 	def isDynamic(self):
 		return self._items is None
 	def items(self):
@@ -29,17 +35,13 @@ class DynamicFolder():
 	def _loadItems(self):
 		return []
 
-class _EmptyItem:
-	def name(self):
-		return "<Empty>"
-	def run(self, menu):
-		pass
+class _EmptyItem(Action):
+	def __init__(self, text="<empty>"):
+		super().__init__(text)
 
-class _LoadingItem:
-	def name(self):
-		return "Loading..."
-	def run(self, menu):
-		pass
+class _LoadingItem(Action):
+	def __init__(self, text="Loading..."):
+		super().__init__(text)
 
 class _ItemLoader:
 	def _run(self):

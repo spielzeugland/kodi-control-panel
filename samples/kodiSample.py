@@ -5,11 +5,14 @@ from consoleDisplay import ConsoleDisplay
 from sampleMenu import Folder
 from menu import Menu, BackItem
 from controller import Controller, Mode
-from kodiMenu import AddonFolder, FavouritesFolder
+from kodiMenu import AddonFolder, FavouritesFolder, ShutdownAction, RebootAction
 from remoteKodi import Kodi
 
-kodi = Kodi()
-mainFolder = Folder("root", [AddonFolder(kodi), FavouritesFolder(kodi)])
+kodi = Kodi("http://osmc/jsonrpc", "osmc", "osmc")
+
+shutdownFolder = Folder("Shutdown", [ShutdownAction(kodi, "Now"), RebootAction(kodi)])
+
+mainFolder = Folder("root", [AddonFolder(kodi), FavouritesFolder(kodi), shutdownFolder])
 
 customBackItem = BackItem()
 menu = Menu(mainFolder, customBackItem)
@@ -18,6 +21,7 @@ controller = Controller(None, menu)
 def backItemRun(menu):
 	if(menu.folder() is mainFolder):
 		controller.exitMenuMode()
+		menu.reset()
 	else:
 		menu.back()
 
