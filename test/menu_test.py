@@ -100,7 +100,6 @@ def test_select_shouldExecuteBackItem():
 	menu.moveBy(-1).select()
 	assert backItem.runCnt == 1
 
-
 def test_select_shouldOpenFolder():
 	menu = Menu(mainFolder)
 	menu.select()
@@ -148,3 +147,26 @@ def test_reset_shouldGoToFirstItemOfMainFolder():
 	assert menu.folder() is mainFolder
 	assert menu.item() is folder1
 	assert len(menu._menuStack) == 0
+	
+def test_select_shouldLoadDynamicFolders():
+	dynamicFolder = mocks.SynchronDynamicFolder("Dynamic", [])
+	dynamicMainFolder = mocks.Folder("Main", [dynamicFolder])
+	menu = Menu(dynamicMainFolder)
+	menu.select()
+	assert dynamicFolder.loadItemsCnt == 1
+	assert menu._currentItems == dynamicFolder._itemsToLoad
+
+def test_select_shouldShowLoadingWhileGettingItemsAsynchronously():
+	dynamicFolder = mocks.NeverLoadingFolder("Dynamic", [])
+	dynamicMainFolder = mocks.Folder("Main", [dynamicFolder])
+	menu = Menu(dynamicMainFolder)
+	menu.select()
+	assert dynamicFolder.loadItemsCnt == 0
+	assert menu.item() is menu._loadingItem
+
+def test_updateItemsForFolder_shouldDoNothingForDifferentFolder():
+	menu = Menu(mainFolder)
+	menu._updateItemsForFolder(folder2, folder2.items())
+	assert menu.folder() is mainFolder
+	assert menu.item() is folder1
+

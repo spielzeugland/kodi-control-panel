@@ -1,14 +1,12 @@
 from menu import DynamicFolder, Action
 from threading import Thread
 
-class UrlFile():
+class UrlFile(Action):
 	def __init__(self, kodi, name, url):
+		super().__init__(name)
 		self._kodi = kodi
-		self._name = name
 		self._url = url
 		self._thread = None
-	def name(self):
-		return self._name
 	def run(self, menu):
 		if self._thread is None:
 			self._thread = Thread(target=self._run)
@@ -20,9 +18,9 @@ class UrlFile():
 
 class UrlFolder(DynamicFolder):
 	def __init__(self, kodi, name, url):
+		super().__init__(name)
 		self._kodi = kodi
 		self._url = url
-		super().__init__(name)
 	def _loadItems(self):
 		items = []
 		files = self._kodi.getFiles(self._url)
@@ -42,8 +40,8 @@ class UrlFolder(DynamicFolder):
 	
 class AddonFolder(DynamicFolder):
 	def __init__(self, kodi, name = "Addons"):
-		self._kodi = kodi
 		super().__init__(name)
+		self._kodi = kodi
 	def _loadItems(self):
 		items = []
 		addons = self._kodi.getAddons()
@@ -58,8 +56,8 @@ class AddonFolder(DynamicFolder):
 		
 class FavouritesFolder(DynamicFolder):
 	def __init__(self, kodi, name = "Favourites"):
-		self._kodi = kodi
 		super().__init__(name)
+		self._kodi = kodi
 	def _loadItems(self):
 		items = []
 		favs = self._kodi.getFavourites()

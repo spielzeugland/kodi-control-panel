@@ -15,23 +15,37 @@ class BackItem(Action):
 		menu.back()
 
 class Folder:
-	def __init__(self, name):
+	def __init__(self, name, items=[]):
 		self._name = name
+		self._items = items
 	def name(self):
 		return self._name
 	def items(self):
-		return []
+		return self._items
 
 class DynamicFolder(Folder):
 	def __init__(self, name):
-		self._items = None
-		super().__init__(name)
-	def isDynamic(self):
-		return self._items is None
-	def items(self):
-		if self.isDynamic():
+		super().__init__(name, None)
+		self.async = True
+	def items(self, callback=None):
+		if self._items is not None:
+			if callback:
+				callback(self._items)
+			return self._items
+		else:
+			if callback:
+				self._loadItemsAsync(callback)
+				return
+			else:
+				self._items = self._loadItems()
+				return self._items
+	def _loadItemsAsync(self, callback):
+		def run():
 			self._items = self._loadItems()
-		return self._items
+			callback(self._items)
+		thread = Thread(target=run)
+		thread.setDaemon(True)
+		thread.start()
 	def _loadItems(self):
 		return []
 
@@ -56,21 +70,22 @@ class _ItemLoader:
 		thread.start()
 
 class Menu:
-	def __init__(self, root, backItem = None, itemLoader = _ItemLoader):
+	def __init__(self, root, backItem = None):
 		self._root = root
 		self._menuStack = []
 		self._backItem = backItem
 		self._emptyItem = _EmptyItem()
 		self._loadingItem = _LoadingItem()
-		self._itemLoader = itemLoader
 		self._setCurrentFolder(root)
+		# self._currentFolder
+		# self._currentItems
+		# self._currentIndex
 	def _setCurrentFolder(self, folder, index = 0):
 		self._currentFolder = folder
 		if hasattr(folder.__class__, "items") and callable(getattr(folder.__class__, "items")):
-			if hasattr(folder.__class__, "isDynamic") and callable(getattr(folder.__class__, "isDynamic")):
+			if getattr(folder, "async", False):
 				self._updateItemsForFolder(folder, [self._loadingItem])
-				self._itemLoader().loadItems(self, folder)
-				return
+				folder.items(lambda newItems: self._updateItemsForFolder(folder, newItems))
 			else:
 				self._updateItemsForFolder(folder, folder.items(), index)
 		else:

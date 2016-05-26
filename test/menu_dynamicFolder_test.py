@@ -1,38 +1,68 @@
+from time import sleep
+
 import context
 import mocks
-from src.menu import Menu
+from src.menu import DynamicFolder
 
-staticAction = mocks.Action("Static Action") 
-staticFolder = mocks.Folder("Static", [staticAction])
-staticMainFolder = mocks.Folder("Main", [staticFolder])
+class DynamicFolderForTest(DynamicFolder):
+	def __init__(self, name, items, delay=0):
+		super().__init__(name)
+		self._itemsToLoad = items
+		self._delay = delay
+		self.loadItemsCnt = 0
+	def _loadItems(self):
+		sleep(self._delay)
+		self.loadItemsCnt += 1
+		return self._itemsToLoad
 
-dynamicAction = mocks.Action("Dynamic Action")
-dynamicFolder = mocks.DynamicFolder("Dynamic", [dynamicAction])
-dynamicMainFolder = mocks.Folder("Main", [dynamicFolder])
-backItem = mocks.Action("<Back>")
+class CountingCallback():
+	def __init__(self):
+		self.calls = []
+	def handler(self, items):
+		self.calls.append(items)
 
-def test_shouldNotCallLoaderForStaticFolders():
-	loader = mocks.SynchronItemLoader
-	menu = Menu(staticMainFolder, backItem, loader)
-	menu.select()
-	assert len(loader.loadItemsStack) == 0
+expectedItems = ["abc", "def"]
 
-def test_shouldCallLoaderForDynamicFolders():
-	loader = mocks.SynchronItemLoader
-	menu = Menu(dynamicMainFolder, backItem, loader)
-	menu.select()
-	assert len(loader.loadItemsStack) == 1
-	assert loader.loadItemsStack[0] is dynamicFolder
+def test_shouldBeAsync():
+	folder = DynamicFolderForTest("name", expectedItems)
+	assert folder.async == True
 
-def test_shouldShowLoadingWhileGettingItemsAsynchronously():
-	loader = mocks.NeverItemLoader
-	menu = Menu(dynamicMainFolder, backItem, loader)
-	menu.select()
-	assert menu.item() is menu._loadingItem
+def test_items_withoutCallback_shouldBeSynchron():
+	folder = DynamicFolderForTest("name", expectedItems)
+	items = folder.items()
+	assert items == expectedItems
+	assert folder.loadItemsCnt == 1
 
-def test_updateItemsForFolderShouldDoNothingForDifferentFolder():
-	menu = Menu(staticMainFolder, backItem)
-	menu._updateItemsForFolder(dynamicMainFolder, [dynamicAction])
-	assert menu.folder() is staticMainFolder
-	assert menu.item() is staticFolder
+def test_items_withCallback_shouldReturnNone():
+	callback = CountingCallback()
+	folder = DynamicFolderForTest("name", expectedItems)
+	items = folder.items(callback.handler)
+	assert items == None
+	
+def test_items_withCallback_shouldBeAsynchron():
+	callback = CountingCallback()
+	folder = DynamicFolderForTest("name", expectedItems, 0.1)
+	items = folder.items(callback.handler)
+	assert folder.loadItemsCnt == 0
+	sleep(0.2)
+	assert folder.loadItemsCnt == 1
+	assert callback.calls[0] == expectedItems
+	
+def test_items_withoutCallback_shouldReturnCachedItemsWhenCallingSecondTime():
+	folder = DynamicFolderForTest("name", expectedItems)
+	items = folder.items()
+	folder.loadItemsCnt = 0 # reseting counter
+	items = folder.items()
+	assert items == expectedItems
+	assert folder.loadItemsCnt == 0
+
+def test_items_withCallback_shouldReturnCachedItemsWhenCallingSecondTime():
+	folder = DynamicFolderForTest("name", expectedItems, 0.2)
+	items = folder.items()
+	folder.loadItemsCnt = 0 # reseting counter
+	callback = CountingCallback()
+	items = folder.items(callback.handler)
+	assert items == expectedItems
+	assert folder.loadItemsCnt == 0
+	assert callback.calls[0] == expectedItems
 

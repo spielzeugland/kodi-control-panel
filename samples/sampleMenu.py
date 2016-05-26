@@ -6,36 +6,20 @@ from time import sleep
 
 class Action(menu.Action):
 	def __init__(self, name):
-		self._name = name
-	def name(self):
-		return self._name
+		super().__init__(name)
 	def run(self, menu):
 		print("Executing %s" % self._name)
 
-class Folder(menu.Folder):
-	def __init__(self, name, items):
-		self._name = name
-		self._items = items
-	def name(self):
-		return self._name
-	def items(self):
-		return self._items
+Folder = menu.Folder
 
-class DynamicFolder:
-	def __init__(self, name, items, loadingTimeout=0):
-		self._name = name
-		self._items = items
+class DynamicFolder(menu.DynamicFolder):
+	def __init__(self, name, items, loadingTimeout=3):
+		super().__init__(name)
+		self._itemsToLoad = items
 		self._loadingTimeout = loadingTimeout
-		self._loaded = False
-	def name(self):
-		return self._name
-	def items(self):
-		if(self._loaded == False):
-			sleep(self._loadingTimeout)
-			self._loaded = True	
-		return self._items
-	def isDynamic(self):
-		return not self._loaded
+	def _loadItems(self):
+		sleep(self._loadingTimeout)
+		return self._itemsToLoad
 
 folder1a = Folder("Empty Sub Folder 1", [])
 folder1b = Folder("Empty Sub Folder 2", [])
@@ -56,7 +40,7 @@ cdTrack1 = Action("Track 1")
 cdTrack2 = Action("Track 2")
 cdTrack3 = Action("Track 3")
 cd = DynamicFolder("CD", [cdTrack1, cdTrack2, cdTrack3], 5)
-favs = Folder("Favourits", [])
+favs = Folder("Favourites", [])
 webradio = Folder("Online radio", [])
 settings = Folder("Settings", [])
 shutdown = Action("Now")

@@ -6,45 +6,39 @@ import mocksKodi as kodi
 
 class Action(menu.Action):
 	def __init__(self, name):
-		self._name = name
+		super().__init__(name)
 		self.runCnt = 0
-	def name(self):
-		return self._name
 	def run(self, menu):
 		self.runCnt += 1
-		print("Executing %s" % self._name)
 
-class Folder(menu.Folder):
-	def __init__(self, name, items):
-		self._name = name
-		self._items = items
-	def name(self):
-		return self._name
-	def items(self):
-		return self._items
+Folder = menu.Folder
 
 class DynamicFolder(menu.DynamicFolder):
-	def __init__(self, name, items, loadingTimeout=0):
+	def __init__(self, name, items, delay=0):
 		super().__init__(name)
-		self._items = items
-		self._loadingTimeout = loadingTimeout
-	def items(self):
-		sleep(self._loadingTimeout)	
-		return self._items
-	def isDynamic(self):
-		return True
+		self._itemsToLoad = items
+		self._delay = delay
+		self.loadItemsCnt = 0
+	def items(self, callback=None):
+		super.items(callback)
+	def _loadItems(self):
+		sleep(self._delay)
+		self.loadItemsCnt += 1	
+		return self._itemsToLoad
+		
+class SynchronDynamicFolder(DynamicFolder):
+	def __init__(self, name, items, delay=0):
+		super().__init__(name, items, delay)
+	def items(self, callback=None):
+		items = self._loadItems()
+		if callback:
+			callback(items)
+		return items
 
-class SynchronItemLoader:
-	loadItemsStack = []
-	def __init__(self):
-		# reset for each new instance
-		SynchronItemLoader.loadItemStack = []
-	def loadItems(self, menu, folder):
-		menu._updateItemsForFolder(folder, folder.items())
-		SynchronItemLoader.loadItemsStack.append(folder)
-
-class NeverItemLoader:
-	def loadItems(self, menu, folder):
+class NeverLoadingFolder(DynamicFolder):
+	def __init__(self, name, items, delay=0):
+		super().__init__(name, items, delay)
+	def items(self, callback=None):
 		pass
 
 class Menu():

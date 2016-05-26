@@ -23,3 +23,11 @@ Start sniffer (will run tests on save)
 ```
 sniffer
 ```
+
+What is missing?
+-----------
+- Locking (multithreading)
+- Error handling
+- Displaying messages
+- Kodi Plugin wrapper
+- ...
