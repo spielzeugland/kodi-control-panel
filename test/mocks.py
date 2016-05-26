@@ -1,7 +1,10 @@
 from time import sleep
+
+import context
+import menu
 import mocksKodi as kodi
 
-class Action:
+class Action(menu.Action):
 	def __init__(self, name):
 		self._name = name
 		self.runCnt = 0
@@ -11,7 +14,7 @@ class Action:
 		self.runCnt += 1
 		print("Executing %s" % self._name)
 
-class Folder:
+class Folder(menu.Folder):
 	def __init__(self, name, items):
 		self._name = name
 		self._items = items
@@ -20,13 +23,11 @@ class Folder:
 	def items(self):
 		return self._items
 
-class DynamicFolder:
+class DynamicFolder(menu.DynamicFolder):
 	def __init__(self, name, items, loadingTimeout=0):
-		self._name = name
+		super().__init__(name)
 		self._items = items
 		self._loadingTimeout = loadingTimeout
-	def name(self):
-		return self._name
 	def items(self):
 		sleep(self._loadingTimeout)	
 		return self._items

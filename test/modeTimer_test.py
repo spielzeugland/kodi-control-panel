@@ -1,5 +1,6 @@
 import time
-from src.modeTimer import ModeTimer
+import context
+from src.controller import _ModeTimer as ModeTimer
 
 def test_construtorWithOptionalTimeout():
 	c = ModeTimer()

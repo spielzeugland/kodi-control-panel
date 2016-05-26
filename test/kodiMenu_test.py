@@ -1,6 +1,7 @@
-from context import AddonFolder, UrlFolder, UrlFile, FavouritesFolder
+import context
 import mocks 
 import time
+from src.kodiMenu import AddonFolder, UrlFolder, UrlFile, FavouritesFolder
 
 def test_UrlFolder_name_shouldReturnName():
 	folder = UrlFolder(mocks.kodi.Kodi(), "newName", "url")

@@ -1,13 +1,13 @@
-from src.menu import Menu, _ItemLoader, _LoadingItem
-from time import sleep
+import context
 import mocks
-from mocks import Action, Folder, DynamicFolder
+from src.menu import _ItemLoader, _LoadingItem
+from time import sleep
 
-dynamicAction1 = Action("Dynamic Action 1")
-dynamicAction2 = Action("Dynamic Action 2")
+dynamicAction1 = mocks.Action("Dynamic Action 1")
+dynamicAction2 = mocks.Action("Dynamic Action 2")
 
 def test_loadItemsShouldCallBackToMenuWhenItemsAreLoaded():
-	dynamicFolder = DynamicFolder("Dynamic", [dynamicAction1, dynamicAction2])
+	dynamicFolder = mocks.DynamicFolder("Dynamic", [dynamicAction1, dynamicAction2])
 	menu = mocks.Menu()
 	loader = _ItemLoader()
 	loader.loadItems(menu, dynamicFolder)
@@ -18,7 +18,7 @@ def test_loadItemsShouldCallBackToMenuWhenItemsAreLoaded():
 	assert menu.updateItemsStack[0][1][1] is dynamicAction2
 	
 def test_loadItemsShouldResetCurrentItemIndex():
-	dynamicFolder = DynamicFolder("Dynamic", [dynamicAction1, dynamicAction2])
+	dynamicFolder = mocks.DynamicFolder("Dynamic", [dynamicAction1, dynamicAction2])
 	menu = mocks.Menu()
 	loader = _ItemLoader()
 	loader.loadItems(menu, dynamicFolder)

@@ -1,21 +1,22 @@
+import context
+import mocks
 from src.menu import Menu
-from mocks import Folder, Action
 
-backItem = Action("<Back>")
+backItem = mocks.Action("<Back>")
 		
-folder1a = Folder("F1a", [])
-folder1b = Folder("F1b", [])
-folder1 = Folder("F1", [folder1a, folder1b])
-folder2a = Folder("F2a", [])
-folder2b = Folder("F2b", [])
-folder2 = Folder("F2", [folder2a, folder2b])
-a1 = Action("A1")
-a2 = Action("A2")
-a3 = Action("A3")
-folder3 = Folder("Folder", [a1, a2, a3])		
-mainFolder = Folder("Nested", [folder1, folder2, folder3])
+folder1a = mocks.Folder("F1a", [])
+folder1b = mocks.Folder("F1b", [])
+folder1 = mocks.Folder("F1", [folder1a, folder1b])
+folder2a = mocks.Folder("F2a", [])
+folder2b = mocks.Folder("F2b", [])
+folder2 = mocks.Folder("F2", [folder2a, folder2b])
+a1 = mocks.Action("A1")
+a2 = mocks.Action("A2")
+a3 = mocks.Action("A3")
+folder3 = mocks.Folder("Folder", [a1, a2, a3])		
+mainFolder = mocks.Folder("Nested", [folder1, folder2, folder3])
 
-emptyFolder = Folder("Folder with no entries", [])		
+emptyFolder = mocks.Folder("Folder with no entries", [])		
 
 def test_init_shouldSelectFirstItemInRootFolder():
 	menu = Menu(mainFolder)

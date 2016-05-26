@@ -1,10 +1,10 @@
 import os, sys
 sys.path.insert(0, os.path.abspath('../src'))
 
+import menu
 from time import sleep
-from menu import Menu, BackItem
 
-class Action:
+class Action(menu.Action):
 	def __init__(self, name):
 		self._name = name
 	def name(self):
@@ -12,7 +12,7 @@ class Action:
 	def run(self, menu):
 		print("Executing %s" % self._name)
 
-class Folder:
+class Folder(menu.Folder):
 	def __init__(self, name, items):
 		self._name = name
 		self._items = items
@@ -50,7 +50,7 @@ folder3 = Folder("Folder 3", [a1, a2, a3])
 emptyFolder = Folder("Folder with no entries", [])
 mainFolder = Folder("Main Menu", [folder1, folder2, folder3, emptyFolder])
 
-sampleMenu = Menu(mainFolder, BackItem())
+sampleMenu = menu.Menu(mainFolder, menu.BackItem())
 
 cdTrack1 = Action("Track 1")
 cdTrack2 = Action("Track 2")
@@ -63,4 +63,4 @@ shutdown = Action("Now")
 reboot = Action("Restart")
 end = Folder("Shutdown", [shutdown, reboot])
 kodiMainFolder = Folder("Main", [cd, favs, webradio, settings, end])
-kodiMenu = Menu(kodiMainFolder, BackItem())
+kodiMenu = menu.Menu(kodiMainFolder, menu.BackItem())

@@ -1,15 +1,15 @@
-from src.menu import Menu
+import context
 import mocks
-from mocks import Action, Folder, DynamicFolder
+from src.menu import Menu
 
-staticAction = Action("Static Action") 
-staticFolder = Folder("Static", [staticAction])
-staticMainFolder = Folder("Main", [staticFolder])
+staticAction = mocks.Action("Static Action") 
+staticFolder = mocks.Folder("Static", [staticAction])
+staticMainFolder = mocks.Folder("Main", [staticFolder])
 
-dynamicAction = Action("Dynamic Action")
-dynamicFolder = DynamicFolder("Dynamic", [dynamicAction])
-dynamicMainFolder = Folder("Main", [dynamicFolder])
-backItem = Action("<Back>")
+dynamicAction = mocks.Action("Dynamic Action")
+dynamicFolder = mocks.DynamicFolder("Dynamic", [dynamicAction])
+dynamicMainFolder = mocks.Folder("Main", [dynamicFolder])
+backItem = mocks.Action("<Back>")
 
 def test_shouldNotCallLoaderForStaticFolders():
 	loader = mocks.SynchronItemLoader
