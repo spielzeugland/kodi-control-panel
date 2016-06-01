@@ -29,5 +29,6 @@ What is missing?
 - Locking (multithreading)
 - Error handling
 - Displaying messages
+- Going back to Python 2.7 since Kodi does not offer Python 3
 - Kodi Plugin wrapper
 - ...
