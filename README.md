@@ -11,7 +11,7 @@ Development
 Install requirements:
 
 ```
-pip install -U pytest sniffer
+pip install -U pytest sniffer pycodestyle
 ```
 
 Run the tests:

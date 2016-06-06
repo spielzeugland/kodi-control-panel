@@ -36,14 +36,18 @@ import json
 import functools
 import requests
 
+
 class JSONRPCError(Exception):
     """Root exception for all errors related to this library"""
+
 
 class TransportError(JSONRPCError):
     """An error occurred while performing a connection to the server"""
 
+
 class ProtocolError(JSONRPCError):
     """An error occurred while dealing with the JSON-RPC protocol"""
+
 
 class Proxy(object):
 
@@ -89,6 +93,7 @@ class Proxy(object):
             raise ProtocolError('JSON-RPC spec forbids mixing arguments and keyword arguments')
         return self.send_request(method_name, is_notification, args or kwargs)
 
+
 class Server(Proxy):
     """A connection to a HTTP JSON-RPC server, backed by requests"""
 
@@ -119,6 +124,7 @@ class Server(Proxy):
 
             return self.deserialize(parsed)
 
+
 class Local(Proxy):
 
     def __init__(self, xbmc):
@@ -137,6 +143,7 @@ class Local(Proxy):
         parsed = json.loads(response)
         return self.deserialize(parsed)
 
+
 class Method(object):
     def __init__(self, request_method, method_name):
         if method_name.startswith("_"):  # prevent rpc-calls for private methods
@@ -151,4 +158,3 @@ class Method(object):
 
     def __call__(self, *args, **kwargs):
         return self.__request_method(self.__method_name, args, kwargs)
-
