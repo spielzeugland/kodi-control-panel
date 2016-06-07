@@ -38,3 +38,22 @@ class Kodi:
 
     def reboot(self):
         self._proxy.System.Reboot()
+
+
+class Local(Proxy):
+
+    def __init__(self, xbmc):
+        self._xbmc = xbmc
+
+    def send_request(self, method_name, is_notification, params):
+        if is_notification:
+            raise ProtocolError('Kodi does not support notifications for local JSON-RPC calls')
+
+        request_body = self.serialize(method_name, params, is_notification)
+        try:
+            response = self._xbmc.executeJSONRPC(request)
+        except Exception as requests_exception:
+            raise TransportError('Error calling method %r' % method_name, requests_exception)
+
+        parsed = json.loads(response)
+        return self.parse_result(parsed)

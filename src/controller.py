@@ -1,5 +1,6 @@
 from threading import Timer
 from enum import Enum, unique
+import menu
 
 
 @unique
@@ -71,3 +72,16 @@ class Controller:
 
     def exitMenuMode(self):
         self._timer.cancel()
+
+
+class BackItem(menu.BackItem):
+
+    def __init__(self, name=".."):
+        super().__init__(name)
+        self.controller = None
+
+    def run(self, menu):
+        if self.controller and menu.isRoot():
+            self.controller.exitMenuMode()
+        else:
+            menu.back()

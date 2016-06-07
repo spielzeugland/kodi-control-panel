@@ -174,3 +174,6 @@ class Menu:
         elif length > 0:
             return self._currentItems[self._currentIndex]
         return self._emptyItem
+
+    def isRoot(self):
+        return self._root == self._currentFolder

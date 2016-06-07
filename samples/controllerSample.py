@@ -3,20 +3,14 @@ sys.path.insert(0, os.path.abspath('../src'))
 
 from consoleDisplay import ConsoleDisplay
 from sampleMenu import kodiMainFolder as menuMainFolder
-from menu import Menu, BackItem
-from controller import Controller, Mode
+from menu import Menu
+from controller import Controller, Mode, BackItem
 
-customBackItem = BackItem()
-menu = Menu(menuMainFolder, customBackItem)
+backItem = BackItem()
+menu = Menu(menuMainFolder, backItem)
 controller = Controller(None, menu)
 
-def backItemRun(menu):
-	if(menu.folder() is menuMainFolder):
-		controller.exitMenuMode()
-	else:
-		menu.back()
-
-customBackItem.run = backItemRun
+backItem.controller = controller
 
 prevMode = None
 prevFolder = None

@@ -34,6 +34,7 @@ import random
 import sys
 import json
 import functools
+
 import requests
 
 
@@ -50,12 +51,14 @@ class ProtocolError(JSONRPCError):
 
 
 class Proxy(object):
+    """ Abstract implementation of a JSON RPC proxy"""
 
     def send_request(self, method_name, is_notification, params):
-        ''''Will be overiden by subclasses'''''
+        """ Subclasses need to overide this method """
         pass
 
-    def deserialize(self, result):
+    @staticmethod
+    def parse_result(result):
         """Parse the data returned by the server according to the JSON-RPC spec. Try to be liberal in what we accept."""
         if not isinstance(result, dict):
             raise ProtocolError('Response is not a dictionary')
@@ -94,6 +97,22 @@ class Proxy(object):
         return self.send_request(method_name, is_notification, args or kwargs)
 
 
+class Method(object):
+    def __init__(self, request_method, method_name):
+        if method_name.startswith("_"):  # prevent rpc-calls for private methods
+            raise AttributeError("invalid attribute '%s'" % method_name)
+        self.__request_method = request_method
+        self.__method_name = method_name
+
+    def __getattr__(self, method_name):
+        if method_name.startswith("_"):  # prevent rpc-calls for private methods
+            raise AttributeError("invalid attribute '%s'" % method_name)
+        return Method(self.__request_method, "%s.%s" % (self.__method_name, method_name))
+
+    def __call__(self, *args, **kwargs):
+        return self.__request_method(self.__method_name, args, kwargs)
+
+
 class Server(Proxy):
     """A connection to a HTTP JSON-RPC server, backed by requests"""
 
@@ -122,39 +141,4 @@ class Server(Proxy):
             except ValueError as value_error:
                 raise TransportError('Cannot deserialize response body', value_error)
 
-            return self.deserialize(parsed)
-
-
-class Local(Proxy):
-
-    def __init__(self, xbmc):
-        self._xbmc = xbmc
-
-    def send_request(self, method_name, is_notification, params):
-        if is_notification:
-            raise ProtocolError('Kodi does not support notifications for local JSON-RPC calls')
-
-        request_body = self.serialize(method_name, params, is_notification)
-        try:
-            response = self._xbmc.executeJSONRPC(request)
-        except Exception as requests_exception:
-            raise TransportError('Error calling method %r' % method_name, requests_exception)
-
-        parsed = json.loads(response)
-        return self.deserialize(parsed)
-
-
-class Method(object):
-    def __init__(self, request_method, method_name):
-        if method_name.startswith("_"):  # prevent rpc-calls for private methods
-            raise AttributeError("invalid attribute '%s'" % method_name)
-        self.__request_method = request_method
-        self.__method_name = method_name
-
-    def __getattr__(self, method_name):
-        if method_name.startswith("_"):  # prevent rpc-calls for private methods
-            raise AttributeError("invalid attribute '%s'" % method_name)
-        return Method(self.__request_method, "%s.%s" % (self.__method_name, method_name))
-
-    def __call__(self, *args, **kwargs):
-        return self.__request_method(self.__method_name, args, kwargs)
+            return self.parse_result(parsed)

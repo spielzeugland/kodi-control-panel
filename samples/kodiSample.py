@@ -6,9 +6,14 @@ from sampleMenu import Folder
 from menu import Menu, BackItem
 from controller import Controller, Mode
 from kodiMenu import AddonFolder, FavouritesFolder, ShutdownAction, RebootAction
-from remoteKodi import Kodi
+from proxy import Server
 
-kodi = Kodi("http://osmc/jsonrpc", "osmc", "osmc")
+host = "osmc"
+user = "osmc"
+pwd = "osmc"
+
+rpcProxy = Server(host, auth=(user, pwd))
+kodi = Kodi(rpcProxy)
 
 shutdownFolder = Folder("Shutdown", [ShutdownAction(kodi, "Now"), RebootAction(kodi)])
 
