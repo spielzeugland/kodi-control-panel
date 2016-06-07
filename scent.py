@@ -1,6 +1,7 @@
 from sniffer.api import *
 import os, termstyle, sys
 
+
 # colors
 pass_fg_color = termstyle.green
 pass_bg_color = termstyle.bg_default
@@ -17,6 +18,7 @@ watch_paths = ['.']
 @file_validator
 def py_files(filename):
     return filename.endswith('.py') and not os.path.basename(filename).startswith('.')
+
 
 @runnable
 def execute_tests(*args):

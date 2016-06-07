@@ -35,13 +35,12 @@ class _ModeTimer:
                 self._timer = Timer(self._timeout, self._timerFunction)
                 self._timer.setDaemon(True)
                 self._timer.start()
-                return True
-
             return True
 
     def cancel(self):
         if self._timer is not None:
             self._timer.cancel()
+            self._timer = None
         self._mainMode = True
 
 
@@ -74,7 +73,7 @@ class Controller:
         self._timer.cancel()
 
 
-class BackItem(menu.BackItem):
+class BackItem(menu.Action):
 
     def __init__(self, name=".."):
         super().__init__(name)

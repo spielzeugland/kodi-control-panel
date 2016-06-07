@@ -1,3 +1,6 @@
+from proxy import Proxy
+
+
 class Kodi:
 
     def __init__(self, proxy):
@@ -17,7 +20,7 @@ class Kodi:
 
     def getFiles(self, url):
         properties = ["title", "file"]
-        response = self._proxy.Files.GetDirectory(properties=properties, directory=url, media "files")
+        response = self._proxy.Files.GetDirectory(properties=properties, directory=url, media="files")
         return response["files"]
 
     def play(self, url):
