@@ -1,7 +1,7 @@
 from time import sleep
 import context
 import mocks
-from src.menu import DynamicFolder
+from src.menu import Folder, DynamicFolder
 
 
 class DynamicFolderForTest(DynamicFolder):
@@ -28,6 +28,20 @@ class CountingCallback():
 
 
 expectedItems = ["abc", "def"]
+
+
+def test_shouldBeSubClassOfFolder():
+    assert isinstance(DynamicFolder(""), Folder)
+
+
+def test_init_shouldTakeName():
+    folder = DynamicFolder("myName")
+    assert folder.name() == "myName"
+
+
+def test_loadItemsShouldReturnEmptyList():
+    folder = DynamicFolder("")
+    assert len(folder._loadItems()) == 0
 
 
 def test_shouldBeAsync():

@@ -84,12 +84,12 @@ class FavouritesFolder(DynamicFolder):
 
 class ShutdownAction(Action):
 
-    def __init__(self, kodi, text=".."):
+    def __init__(self, kodi, text="Shutdown"):
         self._kodi = kodi
         super().__init__(text)
 
     def run(self, menu):
-        kodi.shutdown()
+        self._kodi.shutdown()
 
 
 class RebootAction(Action):
@@ -99,4 +99,4 @@ class RebootAction(Action):
         super().__init__(text)
 
     def run(self, menu):
-        kodi.reboot()
+        self._kodi.reboot()

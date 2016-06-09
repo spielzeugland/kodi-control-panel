@@ -109,8 +109,8 @@ class Menu:
             return
         # TODO check type of items to be a list
         self._currentItems = items
-        if index > len(self._currentItems):
-            self._currentIndex = 0
+        if index >= len(self._currentItems):
+            self._currentIndex = len(self._currentItems) - 1
         else:
             self._currentIndex = index
 

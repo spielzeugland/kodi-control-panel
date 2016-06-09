@@ -49,6 +49,8 @@ class Kodi:
         self._playUrl = None
         self._playCnt = 0
         self._playDelay = 0
+        self.shutdownCnt = 0
+        self.rebootCnt = 0
 
     def getAddons(self):
         asJson = "{{\"addons\" : [{0}]}}".format(self._allAddons)
@@ -77,3 +79,9 @@ class Kodi:
 
     def playWasCalledWith(self, url):
         return self._playUrl == url
+
+    def shutdown(self):
+        self.shutdownCnt += 1
+
+    def reboot(self):
+        self.rebootCnt += 1

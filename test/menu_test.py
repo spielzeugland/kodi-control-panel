@@ -1,6 +1,6 @@
 import context
 import mocks
-from src.menu import Menu
+from src.menu import Menu, Action, Folder, BackItem
 
 
 backItem = mocks.Action("<Back>")
@@ -198,6 +198,16 @@ def test_back_multiLevel():
     assert menu.item() is folder2
 
 
+def test_back_shouldGoToLastElementIfParentItemListWasShortended():
+    subFolders = [Folder("a", []), Folder("b", []), Folder("c", [])]
+    folder = Folder("", subFolders)
+    menu = Menu(folder)
+    menu.moveBy(-1).select()
+    subFolders.pop()
+    menu.back()
+    assert menu.item() == subFolders[1]
+
+
 def test_reset_shouldGoToFirstItemOfMainFolder():
     menu = Menu(mainFolder)
     menu.moveBy(1).select().moveBy(1).select()
@@ -230,3 +240,52 @@ def test_updateItemsForFolder_shouldDoNothingForDifferentFolder():
     menu._updateItemsForFolder(folder2, folder2.items())
     assert menu.folder() is mainFolder
     assert menu.item() is folder1
+
+
+def test_Action_init_shouldTakeName():
+    assert Action("myName").name() == "myName"
+
+
+def test_Action_run_doesNothing():
+    menu = mocks.Menu()
+    Action("").run(menu)
+
+
+def test_Folder_init_shouldTakeName():
+    assert Folder("myName").name() == "myName"
+
+
+def test_Folder_init_shouldTakeItem():
+    items = []
+    folder = Folder("", items)
+    assert folder.items() == items
+
+
+def test_Folder_init_shouldUseDefaultItems():
+    items = []
+    folder = Folder("")
+    assert len(folder.items()) == 0
+
+
+def test_BackItem_run_shouldCallBackOnMenu():
+    menu = mocks.Menu()
+    BackItem().run(menu)
+    assert menu.backCnt == 1
+
+
+def test_BackItem_shouldBeAnAction():
+    assert isinstance(BackItem(), Action)
+
+
+def test_BackItem_init_shouldTakeName():
+    assert BackItem("myName").name() == "myName"
+
+
+def test_BackItem_init_shouldUseDefaultName():
+    assert BackItem().name() == ".."
+
+
+def test_BackItem_run_shouldCallBackOnMenu():
+    menu = mocks.Menu()
+    BackItem().run(menu)
+    assert menu.backCnt == 1
