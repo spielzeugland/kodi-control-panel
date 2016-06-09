@@ -22,5 +22,4 @@ def py_files(filename):
 
 @runnable
 def execute_tests(*args):
-    import pytest
-    return pytest.main(["-x", "test"])
+    import tests

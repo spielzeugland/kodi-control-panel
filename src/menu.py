@@ -78,21 +78,6 @@ class _LoadingItem(Action):
         super().__init__(text)
 
 
-class _ItemLoader:
-
-    def _run(self):
-        # TODO error handling e.g. pass back item with error message
-        items = self._folder.items()
-        self._menu._updateItemsForFolder(self._folder, items)
-
-    def loadItems(self, menu, folder):
-        self._menu = menu
-        self._folder = folder
-        thread = Thread(target=self._run)
-        thread.setDaemon(True)
-        thread.start()
-
-
 class Menu:
 
     def __init__(self, root, backItem=None):

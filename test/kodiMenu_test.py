@@ -58,7 +58,7 @@ def test_FavouritesFolder_items_shouldReturnOneItem():
     assert items[0]._url == "id1"
 
 
-def test_FavouritesFolder_items_shouldReturnOneItem():
+def test_FavouritesFolder_items_shouldReturnTwoItem():
     kodi = mocks.kodi.Kodi()
     mocks.kodi.addFavourite(kodi, "a1", "id1")
     mocks.kodi.addFavourite(kodi, "a2", "id2")

@@ -9,20 +9,25 @@ Development
 -----------
 
 Install requirements:
-
 ```
-pip install -U pytest sniffer pycodestyle
+pip install -U pytest sniffer pycodestyle coverage
 ```
 
 Run the tests:
 ```
-py.test test
+python tests.py
 ```
 
 Start sniffer (will run tests on save)
 ```
 sniffer
 ```
+
+Run coverage
+```
+coverage run tests.py
+```
+
 
 What is missing?
 -----------
