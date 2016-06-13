@@ -31,7 +31,7 @@ def action():
 
 
 if __name__ == "__main__":
-    host = "osmc"
+    host = "http://osmc/jsonrpc"
     user = "osmc"
     pwd = "osmc"
 

@@ -2,12 +2,12 @@ from threading import Timer
 import menu
 
 
-class Mode():
+class Mode(object):
     Player = 0
     Menu = 1
 
 
-class _ModeTimer:
+class _ModeTimer(object):
 
     def __init__(self, timeout=5):
         self._mainMode = True
@@ -42,7 +42,7 @@ class _ModeTimer:
         self._mainMode = True
 
 
-class Controller:
+class Controller(object):
 
     def __init__(self, player, menu, timer=_ModeTimer()):
         self.player = player
@@ -74,7 +74,7 @@ class Controller:
 class BackItem(menu.Action):
 
     def __init__(self, name=".."):
-        super().__init__(name)
+        super(BackItem, self).__init__(name)
         self.controller = None
 
     def run(self, menu):

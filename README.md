@@ -10,7 +10,7 @@ Development
 
 Install requirements:
 ```
-pip install -U pytest sniffer pycodestyle coverage
+pip install -r requirements.txt
 ```
 
 Run the tests:
@@ -34,6 +34,5 @@ What is missing?
 - Locking (multithreading)
 - Error handling
 - Displaying messages
-- Going back to Python 2.7 since Kodi does not offer Python 3
 - Kodi Plugin wrapper
 - ...

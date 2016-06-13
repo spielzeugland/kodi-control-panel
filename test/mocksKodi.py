@@ -39,7 +39,7 @@ def addPlayDelay(kodi, delay):
     kodi._playDelay = delay
 
 
-class Kodi:
+class Kodi(object):
 
     def __init__(self):
         self._addons = {}

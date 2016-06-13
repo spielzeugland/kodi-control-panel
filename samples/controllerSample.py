@@ -1,5 +1,4 @@
 import context
-
 from _consoleDisplay import ConsoleDisplay
 from _menus import kodiMainFolder as menuMainFolder
 from menu import Menu

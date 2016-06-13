@@ -7,7 +7,7 @@ import mocksKodi as kodi
 class Action(menu.Action):
 
     def __init__(self, name):
-        super().__init__(name)
+        super(Action, self).__init__(name)
         self.runCnt = 0
 
     def run(self, menu):
@@ -20,7 +20,7 @@ Folder = menu.Folder
 class DynamicFolder(menu.DynamicFolder):
 
     def __init__(self, name, items, delay=0):
-        super().__init__(name)
+        super(DynamicFolder, self).__init__(name)
         self._itemsToLoad = items
         self._delay = delay
         self.loadItemsCnt = 0
@@ -37,7 +37,7 @@ class DynamicFolder(menu.DynamicFolder):
 class SynchronDynamicFolder(DynamicFolder):
 
     def __init__(self, name, items, delay=0):
-        super().__init__(name, items, delay)
+        super(SynchronDynamicFolder, self).__init__(name, items, delay)
 
     def items(self, callback=None):
         items = self._loadItems()
@@ -49,13 +49,13 @@ class SynchronDynamicFolder(DynamicFolder):
 class NeverLoadingFolder(DynamicFolder):
 
     def __init__(self, name, items, delay=0):
-        super().__init__(name, items, delay)
+        super(NeverLoadingFolder, self).__init__(name, items, delay)
 
     def items(self, callback=None):
         pass
 
 
-class Controller():
+class Controller(object):
 
     def __init__(self):
         self.exitMenuModeCnt = 0
@@ -64,7 +64,7 @@ class Controller():
         self.exitMenuModeCnt += 1
 
 
-class Menu():
+class Menu(object):
 
     def __init__(self, isRoot=True):
         self._isRoot = isRoot
@@ -85,11 +85,11 @@ class Menu():
         return self._isRoot
 
 
-class Player:
+class Player(object):
     pass
 
 
-class Timer():
+class Timer(object):
 
     def __init__(self, mainMode=True):
         self._mainMode = mainMode

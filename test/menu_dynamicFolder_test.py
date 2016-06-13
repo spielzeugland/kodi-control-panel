@@ -7,7 +7,7 @@ from menu import Folder, DynamicFolder
 class DynamicFolderForTest(DynamicFolder):
 
     def __init__(self, name, items, delay=0):
-        super().__init__(name)
+        super(DynamicFolderForTest, self).__init__(name)
         self._itemsToLoad = items
         self._delay = delay
         self.loadItemsCnt = 0
@@ -18,7 +18,7 @@ class DynamicFolderForTest(DynamicFolder):
         return self._itemsToLoad
 
 
-class CountingCallback():
+class CountingCallback(object):
 
     def __init__(self):
         self.calls = []

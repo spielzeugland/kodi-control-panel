@@ -1,4 +1,4 @@
 import context
-import src.proxy
+import proxy
 
 # todo

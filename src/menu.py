@@ -1,7 +1,7 @@
 from threading import Thread
 
 
-class Action:
+class Action(object):
 
     def __init__(self, name):
         self._name = name
@@ -16,13 +16,13 @@ class Action:
 class BackItem(Action):
 
     def __init__(self, name=".."):
-        super().__init__(name)
+        super(BackItem, self).__init__(name)
 
     def run(self, menu):
         menu.back()
 
 
-class Folder:
+class Folder(object):
 
     def __init__(self, name, items=[]):
         self._name = name
@@ -38,7 +38,7 @@ class Folder:
 class DynamicFolder(Folder):
 
     def __init__(self, name):
-        super().__init__(name, None)
+        super(DynamicFolder, self).__init__(name, None)
         self.async = True
 
     def items(self, callback=None):
@@ -69,16 +69,16 @@ class DynamicFolder(Folder):
 class _EmptyItem(Action):
 
     def __init__(self, text="<empty>"):
-        super().__init__(text)
+        super(_EmptyItem, self).__init__(text)
 
 
 class _LoadingItem(Action):
 
     def __init__(self, text="Loading..."):
-        super().__init__(text)
+        super(_LoadingItem, self).__init__(text)
 
 
-class Menu:
+class Menu(object):
 
     def __init__(self, root, backItem=None):
         self._root = root
@@ -146,7 +146,7 @@ class Menu:
 
     def reset(self):
         self._setCurrentFolder(self._root)
-        self._menuStack.clear()
+        self._menuStack = []  # self.menuStack.clear()
         return self
 
     def folder(self):

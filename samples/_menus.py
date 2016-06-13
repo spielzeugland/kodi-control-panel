@@ -8,7 +8,7 @@ import menu
 class Action(menu.Action):
 
     def __init__(self, name):
-        super().__init__(name)
+        super(Action, self).__init__(name)
 
     def run(self, menu):
         print("Executing %s" % self._name)
@@ -17,7 +17,7 @@ class Action(menu.Action):
 class DynamicFolder(menu.DynamicFolder):
 
     def __init__(self, name, items, loadingTimeout=3):
-        super().__init__(name)
+        super(DynamicFolder, self).__init__(name)
         self._itemsToLoad = items
         self._loadingTimeout = loadingTimeout
 

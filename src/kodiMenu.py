@@ -5,7 +5,7 @@ from threading import Thread
 class UrlFile(Action):
 
     def __init__(self, kodi, name, url):
-        super().__init__(name)
+        super(UrlFile, self).__init__(name)
         self._kodi = kodi
         self._url = url
         self._thread = None
@@ -24,7 +24,7 @@ class UrlFile(Action):
 class UrlFolder(DynamicFolder):
 
     def __init__(self, kodi, name, url):
-        super().__init__(name)
+        super(UrlFolder, self).__init__(name)
         self._kodi = kodi
         self._url = url
 
@@ -49,7 +49,7 @@ class UrlFolder(DynamicFolder):
 class AddonFolder(DynamicFolder):
 
     def __init__(self, kodi, name="Addons"):
-        super().__init__(name)
+        super(AddonFolder, self).__init__(name)
         self._kodi = kodi
 
     def _loadItems(self):
@@ -68,7 +68,7 @@ class AddonFolder(DynamicFolder):
 class FavouritesFolder(DynamicFolder):
 
     def __init__(self, kodi, name="Favourites"):
-        super().__init__(name)
+        super(FavouritesFolder, self).__init__(name)
         self._kodi = kodi
 
     def _loadItems(self):
@@ -86,7 +86,7 @@ class ShutdownAction(Action):
 
     def __init__(self, kodi, text="Shutdown"):
         self._kodi = kodi
-        super().__init__(text)
+        super(ShutdownAction, self).__init__(text)
 
     def run(self, menu):
         self._kodi.shutdown()
@@ -96,7 +96,7 @@ class RebootAction(Action):
 
     def __init__(self, kodi, text="Reboot"):
         self._kodi = kodi
-        super().__init__(text)
+        super(RebootAction, self).__init__(text)
 
     def run(self, menu):
         self._kodi.reboot()
