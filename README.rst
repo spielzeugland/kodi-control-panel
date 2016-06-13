@@ -14,24 +14,30 @@ Development
 -----------
 
 Install requirements:
-```
-pip install -r requirements-dev.txt
-```
+
+.. code-block::
+
+     pip install -r requirements-dev.txt
 
 Run the tests:
-```
-python tests.py
-```
+
+.. code-block::
+
+    python tests.py
+
 
 Start sniffer (will run tests on save)
-```
-sniffer
-```
+
+.. code-block::
+
+     sniffer
+
 
 Run coverage
-```
-coverage run tests.py
-```
+
+.. code-block::
+
+    coverage run tests.py
 
 
 What is missing?
