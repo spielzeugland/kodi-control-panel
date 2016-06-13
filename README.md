@@ -10,7 +10,7 @@ Development
 
 Install requirements:
 ```
-pip install -r requirements.txt
+pip install -r requirements-dev.txt
 ```
 
 Run the tests:
