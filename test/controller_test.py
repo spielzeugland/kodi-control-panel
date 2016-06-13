@@ -1,6 +1,6 @@
 import context
 import mocks
-from src.controller import Controller, Mode
+from controller import Controller, Mode
 
 
 player = mocks.Player()

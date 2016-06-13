@@ -1,10 +1,8 @@
 from threading import Timer
-from enum import Enum, unique
 import menu
 
 
-@unique
-class Mode(Enum):
+class Mode():
     Player = 0
     Menu = 1
 

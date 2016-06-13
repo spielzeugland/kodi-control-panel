@@ -1,7 +1,7 @@
 from time import sleep
 import context
 import mocks
-from src.menu import Folder, DynamicFolder
+from menu import Folder, DynamicFolder
 
 
 class DynamicFolderForTest(DynamicFolder):

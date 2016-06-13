@@ -2,7 +2,7 @@ import context
 import mocks
 import time
 import menu
-from src.kodiMenu import AddonFolder, UrlFolder, UrlFile, FavouritesFolder, ShutdownAction, RebootAction
+from kodiMenu import AddonFolder, UrlFolder, UrlFile, FavouritesFolder, ShutdownAction, RebootAction
 
 
 def test_UrlFolder_name_shouldReturnName():

@@ -1,6 +1,6 @@
 import context
 import mocks
-from src.menu import Menu, Action, Folder, BackItem
+from menu import Menu, Action, Folder, BackItem
 
 
 backItem = mocks.Action("<Back>")
@@ -283,9 +283,3 @@ def test_BackItem_init_shouldTakeName():
 
 def test_BackItem_init_shouldUseDefaultName():
     assert BackItem().name() == ".."
-
-
-def test_BackItem_run_shouldCallBackOnMenu():
-    menu = mocks.Menu()
-    BackItem().run(menu)
-    assert menu.backCnt == 1

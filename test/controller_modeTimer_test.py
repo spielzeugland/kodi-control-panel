@@ -1,6 +1,6 @@
 import time
 import context
-from src.controller import _ModeTimer as ModeTimer
+from controller import _ModeTimer as ModeTimer
 
 
 def test_construtorWithOptionalTimeout():
@@ -56,5 +56,11 @@ def test_menuMode_updateShouldBeExtendMenuMode():
 def test_menuMode_cancelShouldExitMenuMode():
     c = ModeTimer(1)
     c.update()
+    c.cancel()
+    assert c. isMainMode() is True
+
+
+def test_menuMode_cancelInMainModeShouldDoNothing():
+    c = ModeTimer(1)
     c.cancel()
     assert c. isMainMode() is True

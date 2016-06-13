@@ -1,6 +1,6 @@
 import context
 import mocks
-from src.controller import BackItem
+from controller import BackItem
 import menu
 
 
