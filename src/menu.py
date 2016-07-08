@@ -1,4 +1,4 @@
-from threading import Thread
+from threading import Thread, RLock
 from synchronized import createLock, withLock
 
 
@@ -118,79 +118,97 @@ class Menu(object):
         self._backItem = backItem
         self._emptyItem = _EmptyItem()
         self._loadingItem = _LoadingItem()
+        self._menuStackLock = RLock()
+        self._folderLock = RLock()
         self._setCurrentFolder(root)
         # self._currentFolder
         # self._currentItems
         # self._currentIndex
 
     def _setCurrentFolder(self, folder, index=0):
-        self._currentFolder = folder
-        if hasattr(folder.__class__, "items") and callable(getattr(folder.__class__, "items")):
-            if getattr(folder, "async", False):
-                self._updateItemsForFolder(folder, [self._loadingItem])
-                folder.items(lambda newItems: self._updateItemsForFolder(folder, newItems))
-            else:
-                self._updateItemsForFolder(folder, folder.items(), index)
+        if getattr(folder, "async", False):
+            self._setCurrentFolderAsynchron(folder, index)
         else:
-            self._currentItems = []
-            self._currentIndex = 0
-            # TODO log + message
+            self._setCurrentFolderSynchron(folder, folder.items(), index)
+
+    def _setCurrentFolderSynchron(self, folder, newItems, index):
+        with self._folderLock:
+            self._currentFolder = folder
+            self._updateItemsForFolder(folder, newItems, index)
+
+    def _setCurrentFolderAsynchron(self, folder, index):
+        with self._folderLock:
+            self._currentFolder = folder
+            self._updateItemsForFolder(folder, [self._loadingItem])
+        folder.items(lambda newItems: self._updateItemsForFolder(folder, newItems, index))
 
     def _updateItemsForFolder(self, folder, items, index=0):
-        if self._currentFolder is not folder:
-            return
-        # TODO check type of items to be a list
-        self._currentItems = items
-        if index >= len(self._currentItems):
-            self._currentIndex = len(self._currentItems) - 1
-        else:
-            self._currentIndex = index
+        with self._folderLock:
+            if self._currentFolder is not folder:
+                return
+            # TODO check type of items to be a list
+            self._currentItems = items
+            if index >= len(self._currentItems):
+                self._currentIndex = len(self._currentItems) - 1
+            else:
+                self._currentIndex = index
 
     def moveBy(self, offset):
-        length = len(self._currentItems)
-        if self._backItem is not None:
-            length += 1
-        if length > 0:
-            self._currentIndex = (self._currentIndex + offset) % length
-        return self
+        with self._folderLock:
+            length = len(self._currentItems)
+            if self._backItem is not None:
+                length += 1
+            if length > 0:
+                self._currentIndex = (self._currentIndex + offset) % length
+            return self
 
     def select(self):
-        length = len(self._currentItems)
-        if self._currentIndex == length and self._backItem is not None:
-            entry = self._backItem
-        else:
-            entry = self._currentItems[self._currentIndex]
+        with self._folderLock:
+            length = len(self._currentItems)
+            if self._currentIndex == length and self._backItem is not None:
+                entry = self._backItem
+            else:
+                entry = self._currentItems[self._currentIndex]
+
         if hasattr(entry.__class__, "run") and callable(getattr(entry.__class__, "run")):
             # TODO error handling
             entry.run(self)
             return self
         else:
-            stackTuple = (self._currentFolder, self._currentIndex)
-            self._menuStack.append(stackTuple)
+            with self._menuStackLock:
+                stackTuple = (self._currentFolder, self._currentIndex)
+                self._menuStack.append(stackTuple)
             self._setCurrentFolder(entry)
             return self
 
     def back(self):
-        if len(self._menuStack) > 0:
-            parent = self._menuStack.pop()
+        parent = None
+        with self._menuStackLock:
+            if len(self._menuStack) > 0:
+                parent = self._menuStack.pop()
+        if parent is not None:
             self._setCurrentFolder(parent[0], parent[1])
         return self
 
     def reset(self):
+        with self._menuStackLock:
+            self._menuStack = []  # self.menuStack.clear()
         self._setCurrentFolder(self._root)
-        self._menuStack = []  # self.menuStack.clear()
         return self
 
     def folder(self):
-        return self._currentFolder
+        with self._folderLock:
+            return self._currentFolder
 
     def item(self):
-        length = len(self._currentItems)
-        if self._currentIndex == length and self._backItem is not None:
-            return self._backItem
-        elif length > 0:
-            return self._currentItems[self._currentIndex]
-        return self._emptyItem
+        with self._folderLock:
+            length = len(self._currentItems)
+            if self._currentIndex == length and self._backItem is not None:
+                return self._backItem
+            elif length > 0:
+                return self._currentItems[self._currentIndex]
+            return self._emptyItem
 
     def isRoot(self):
-        return self._root == self._currentFolder
+        with self._folderLock:
+            return self._root == self._currentFolder
