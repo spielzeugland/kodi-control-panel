@@ -1,24 +1,16 @@
-from menu import DynamicFolder, Action
+from menu import DynamicFolder, Action, AsyncAction
 from threading import Thread
 
 
-class UrlFile(Action):
+class UrlFile(AsyncAction):
 
     def __init__(self, kodi, name, url):
         super(UrlFile, self).__init__(name)
         self._kodi = kodi
         self._url = url
-        self._thread = None
 
-    def run(self, menu):
-        if self._thread is None:
-            self._thread = Thread(target=self._run)
-            self._thread.setDaemon(True)
-            self._thread.start()
-
-    def _run(self):
+    def _asyncRun(self):
         self._kodi.play(self._url)
-        self._thread = None
 
 
 class UrlFolder(DynamicFolder):

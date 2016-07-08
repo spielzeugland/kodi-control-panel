@@ -1,4 +1,5 @@
 from threading import Thread
+from synchronized import createLock, withLock
 
 
 class Action(object):
@@ -22,6 +23,31 @@ class BackItem(Action):
         menu.back()
 
 
+class AsyncAction(Action):
+
+    @createLock
+    def __init__(self, name):
+        super(AsyncAction, self).__init__(name)
+        self._thread = None
+
+    def run(self, menu):
+        if not self._isRunning():
+            self._scheduleRun()
+
+    @withLock
+    def _scheduleRun(self):
+        self._thread = Thread(target=self._asyncRun)
+        self._thread.setDaemon(True)
+        self._thread.start()
+
+    @withLock
+    def _isRunning(self):
+        return self._thread is not None and self._thread.is_alive()
+
+    def _asyncRun(self):
+        pass
+
+
 class Folder(object):
 
     def __init__(self, name, items=[]):
@@ -37,10 +63,12 @@ class Folder(object):
 
 class DynamicFolder(Folder):
 
+    @createLock
     def __init__(self, name):
         super(DynamicFolder, self).__init__(name, None)
         self.async = True
 
+    @withLock
     def items(self, callback=None):
         if self._items is not None:
             if callback:
@@ -56,11 +84,15 @@ class DynamicFolder(Folder):
 
     def _loadItemsAsync(self, callback):
         def run():
-            self._items = self._loadItems()
+            self._items = self._loadItemsWithLock()
             callback(self._items)
         thread = Thread(target=run)
         thread.setDaemon(True)
         thread.start()
+
+    @withLock
+    def _loadItemsWithLock(self):
+        return self._loadItems()
 
     def _loadItems(self):
         return []

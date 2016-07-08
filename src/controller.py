@@ -1,4 +1,5 @@
 from threading import Timer
+from synchronized import createLock, withLock
 import menu
 
 
@@ -9,17 +10,21 @@ class Mode(object):
 
 class _ModeTimer(object):
 
+    @createLock
     def __init__(self, timeout=5):
         self._mainMode = True
         self._timer = None
         self._timeout = timeout
 
+    @withLock
     def isMainMode(self):
         return self._mainMode
 
+    @withLock
     def _timerFunction(self):
         self._mainMode = True
 
+    @withLock
     def update(self):
         if self._mainMode is True:
             self._mainMode = False
@@ -35,6 +40,7 @@ class _ModeTimer(object):
                 self._timer.start()
             return True
 
+    @withLock
     def cancel(self):
         if self._timer is not None:
             self._timer.cancel()
