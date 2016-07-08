@@ -19,6 +19,7 @@ Install requirements:
 
      pip install -r requirements-dev.txt
 
+
 Run the tests:
 
 .. code-block::
@@ -38,6 +39,9 @@ Run coverage
 .. code-block::
 
     coverage run tests.py
+
+
+View coverage report run ``coverage html`` and open `index.html` from `coverage` folder or just run ``coverage report``.
 
 
 What is missing?

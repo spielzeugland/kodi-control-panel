@@ -60,3 +60,26 @@ class Local(Proxy):
 
         parsed = json.loads(response)
         return self.parse_result(parsed)
+
+
+class Log(object):
+
+    def __init__(self, name, xbmc):
+        self._name = name
+        self._xbmc = xbmc
+
+    def error(self, msg, *args):
+        self._log(self._xbmc.LOGERROR, msg, *args)
+
+    def warning(self, msg, *args):
+        self._log(self._xbmc.LOGWARNING, msg, *args)
+
+    def info(self, msg, *args):
+        self._log(self._xbmc.LOGNOTICE, msg, *args)
+
+    def debug(self, msg, *args):
+        self._log(self._xbmc.LOGDEBUG, msg, *args)
+
+    def _log(self, logLevel, msg, *args):
+        parameters = [self._name, msg] + args
+        self._xbmc.log("### [%s] - %s" .format(parameters), level=logLevel)  # TODO add all arguments

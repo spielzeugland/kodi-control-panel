@@ -113,3 +113,26 @@ def timerInMainMode():
 
 def timerInMenuMode():
     return Timer(mainMode=False)
+
+
+class logging(object):
+
+    def __init__(self):
+        self.name = None
+        self.recorded = {}
+
+    def logger(self, loggerName):
+        self.name = loggerName
+        return self
+
+    def error(self, message, *args):
+        self.recorded["error"] = {"message": message, "args": args}
+
+    def warning(self, message, *args):
+        self.recorded["warning"] = {"message": message, "args": args}
+
+    def info(self, message, *args):
+        self.recorded["info"] = {"message": message, "args": args}
+
+    def debug(self, message, *args):
+        self.recorded["debug"] = {"message": message, "args": args}
