@@ -46,8 +46,8 @@ View coverage report run ``coverage html`` and open `index.html` from `coverage`
 
 What is missing?
 -----------
-- Locking (multithreading)
-- Error handling
+- Logging
 - Displaying messages
 - Kodi Plugin wrapper
+- Multilanguage support
 - ...

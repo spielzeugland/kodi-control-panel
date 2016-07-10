@@ -14,7 +14,36 @@ class Action(menu.Action):
         self.runCnt += 1
 
 
+class FailingAction(menu.Action):
+
+    def __init__(self, name, exception):
+        super(FailingAction, self).__init__(name)
+        self._exception = exception
+
+    def run(self, menu):
+        raise self._exception
+
+
 Folder = menu.Folder
+
+
+class FailingFolder(menu.Folder):
+
+    def __init__(self, name, exception):
+        super(FailingFolder, self).__init__(name)
+        self._exception = exception
+
+    def items(self):
+        raise self._exception
+
+
+class IncorrectFolder(menu.Folder):
+
+    def __init__(self, name):
+        super(IncorrectFolder, self).__init__(name)
+
+    def items(self):
+        return "something which is not a list"
 
 
 class DynamicFolder(menu.DynamicFolder):
@@ -25,13 +54,20 @@ class DynamicFolder(menu.DynamicFolder):
         self._delay = delay
         self.loadItemsCnt = 0
 
-    def items(self, callback=None):
-        super.items(callback)
-
     def _loadItems(self):
         sleep(self._delay)
         self.loadItemsCnt += 1
         return self._itemsToLoad
+
+
+class FailingDynamicFolder(menu.DynamicFolder):
+
+    def __init__(self, name, exception):
+        super(FailingDynamicFolder, self).__init__(name)
+        self._exception = exception
+
+    def _loadItems(self):
+        raise self._exception
 
 
 class SynchronDynamicFolder(DynamicFolder):

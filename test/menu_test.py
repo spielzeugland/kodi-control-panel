@@ -1,5 +1,6 @@
 import context
 import mocks
+import messages
 from menu import Menu, Action, Folder, BackItem
 
 
@@ -132,6 +133,53 @@ def test_moveByMinus1_withBackItem_shouldNotFailForEmptyFolder():
     menu = Menu(emptyFolder, backItem)
     menu.moveBy(-1)
     assert menu.item() is backItem
+
+
+def test_select_shouldExecuteSelectedAction():
+    action = mocks.Action("Action")
+    folder = mocks.Folder("Folder", [action])
+    menu = Menu(folder)
+    menu.select()
+    assert action.runCnt == 1
+
+
+def test_select_shouldAddMessageForFailingAction():
+    action = mocks.FailingAction("My Failing Action", Exception("exception text"))
+    folder = mocks.Folder("Folder", [action])
+    menu = Menu(folder)
+    messages._clear()
+
+    menu.select()
+    newMessages = messages.getUnread()
+    assert len(newMessages) == 1
+    assert newMessages[0].text == "Action \"My Failing Action\" executed with error"
+    assert newMessages[0].details == "exception text"
+
+
+def test_select_shouldAddMessageForFailingFolder():
+    failingFolder = mocks.FailingFolder("my failing folder", Exception("the exception message"))
+    folder = mocks.Folder("Folder", [failingFolder])
+    menu = Menu(folder)
+    messages._clear()
+
+    menu.select()
+    newMessages = messages.getUnread()
+    assert len(newMessages) is 1
+    assert newMessages[0].text == "Folder \"my failing folder\" could not be loaded"
+    assert newMessages[0].details == "the exception message"
+
+
+def test_select_shouldAddMessageForFolderReturningInvalidItems():
+    failingFolder = mocks.IncorrectFolder("my incorrect folder")
+    folder = mocks.Folder("Folder", [failingFolder])
+    menu = Menu(folder)
+    messages._clear()
+
+    menu.select()
+    newMessages = messages.getUnread()
+    assert len(newMessages) is 1
+    assert newMessages[0].text == "Folder \"my incorrect folder\" could not be loaded"
+    assert newMessages[0].details == "Returned items object should be of type list"
 
 
 def test_select_shouldOpenFolder():

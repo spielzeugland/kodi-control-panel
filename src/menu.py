@@ -1,5 +1,6 @@
 from threading import Thread, RLock
 from synchronized import createLock, withLock
+import messages
 
 
 class Action(object):
@@ -84,15 +85,19 @@ class DynamicFolder(Folder):
 
     def _loadItemsAsync(self, callback):
         def run():
-            self._items = self._loadItemsWithLock()
+            self._items = self._loadItemsWithoutLock()
             callback(self._items)
         thread = Thread(target=run)
         thread.setDaemon(True)
         thread.start()
 
-    @withLock
-    def _loadItemsWithLock(self):
-        return self._loadItems()
+    def _loadItemsWithoutLock(self):
+        try:
+            return self._loadItems()
+        except Exception as e:
+            text = "Folder \"{0}\" could not be loaded".format(self.name())
+            details = e.message
+            messages.add(text, details)
 
     def _loadItems(self):
         return []
@@ -129,12 +134,20 @@ class Menu(object):
         if getattr(folder, "async", False):
             self._setCurrentFolderAsynchron(folder, index)
         else:
-            self._setCurrentFolderSynchron(folder, folder.items(), index)
+            self._setCurrentFolderSynchron(folder, index)
 
-    def _setCurrentFolderSynchron(self, folder, newItems, index):
-        with self._folderLock:
-            self._currentFolder = folder
-            self._updateItemsForFolder(folder, newItems, index)
+    def _setCurrentFolderSynchron(self, folder, index):
+        newItems = None
+        try:
+            newItems = folder.items()
+        except Exception as e:
+            text = "Folder \"{0}\" could not be loaded".format(folder.name())
+            details = e.message
+            messages.add(text, details)
+        if newItems is not None:
+            with self._folderLock:
+                self._currentFolder = folder
+                self._updateItemsForFolder(folder, newItems, index)
 
     def _setCurrentFolderAsynchron(self, folder, index):
         with self._folderLock:
@@ -142,16 +155,20 @@ class Menu(object):
             self._updateItemsForFolder(folder, [self._loadingItem])
         folder.items(lambda newItems: self._updateItemsForFolder(folder, newItems, index))
 
-    def _updateItemsForFolder(self, folder, items, index=0):
-        with self._folderLock:
-            if self._currentFolder is not folder:
-                return
-            # TODO check type of items to be a list
-            self._currentItems = items
-            if index >= len(self._currentItems):
-                self._currentIndex = len(self._currentItems) - 1
-            else:
-                self._currentIndex = index
+    def _updateItemsForFolder(self, folder, items=[], index=0):
+        if isinstance(items, list):
+            with self._folderLock:
+                if self._currentFolder is not folder:
+                    return
+                self._currentItems = items
+                if index >= len(self._currentItems):
+                    self._currentIndex = len(self._currentItems) - 1
+                else:
+                    self._currentIndex = index
+        else:
+            text = "Folder \"{0}\" could not be loaded".format(folder.name())
+            details = "Returned items object should be of type list"  # TODO but was \"{0}\"".format(itemType)
+            messages.add(text, details)
 
     def moveBy(self, offset):
         with self._folderLock:
@@ -171,8 +188,12 @@ class Menu(object):
                 entry = self._currentItems[self._currentIndex]
 
         if hasattr(entry.__class__, "run") and callable(getattr(entry.__class__, "run")):
-            # TODO error handling
-            entry.run(self)
+            try:
+                entry.run(self)
+            except Exception as e:
+                text = "Action \"{0}\" executed with error".format(entry.name())
+                details = e.message
+                messages.add(text, details)
             return self
         else:
             with self._menuStackLock:
