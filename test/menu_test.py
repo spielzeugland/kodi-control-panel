@@ -144,7 +144,8 @@ def test_select_shouldExecuteSelectedAction():
 
 
 def test_select_shouldAddMessageForFailingAction():
-    action = mocks.FailingAction("My Failing Action", Exception("exception text"))
+    someException = Exception("exception text")
+    action = mocks.FailingAction("My Failing Action", someException)
     folder = mocks.Folder("Folder", [action])
     menu = Menu(folder)
     messages._clear()
@@ -153,11 +154,13 @@ def test_select_shouldAddMessageForFailingAction():
     newMessages = messages.getUnread()
     assert len(newMessages) == 1
     assert newMessages[0].text == "Action \"My Failing Action\" executed with error"
-    assert newMessages[0].details == "exception text"
+    assert newMessages[0].details is None
+    assert newMessages[0].sysInfo[1] is someException
 
 
 def test_select_shouldAddMessageForFailingFolder():
-    failingFolder = mocks.FailingFolder("my failing folder", Exception("the exception message"))
+    someException = Exception("exception text")
+    failingFolder = mocks.FailingFolder("my failing folder", someException)
     folder = mocks.Folder("Folder", [failingFolder])
     menu = Menu(folder)
     messages._clear()
@@ -166,7 +169,8 @@ def test_select_shouldAddMessageForFailingFolder():
     newMessages = messages.getUnread()
     assert len(newMessages) is 1
     assert newMessages[0].text == "Folder \"my failing folder\" could not be loaded"
-    assert newMessages[0].details == "the exception message"
+    assert newMessages[0].details is None
+    assert newMessages[0].sysInfo[1] is someException
 
 
 def test_select_shouldAddMessageForFolderReturningInvalidItems():

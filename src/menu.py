@@ -1,3 +1,4 @@
+import sys
 from threading import Thread, RLock
 from synchronized import createLock, withLock
 import messages
@@ -96,8 +97,7 @@ class DynamicFolder(Folder):
             return self._loadItems()
         except Exception as e:
             text = "Folder \"{0}\" could not be loaded".format(self.name())
-            details = e.message
-            messages.add(text, details)
+            messages.add(text, None, sys.exc_info())
 
     def _loadItems(self):
         return []
@@ -142,8 +142,7 @@ class Menu(object):
             newItems = folder.items()
         except Exception as e:
             text = "Folder \"{0}\" could not be loaded".format(folder.name())
-            details = e.message
-            messages.add(text, details)
+            messages.add(text, None, sys.exc_info())
         if newItems is not None:
             with self._folderLock:
                 self._currentFolder = folder
@@ -192,8 +191,7 @@ class Menu(object):
                 entry.run(self)
             except Exception as e:
                 text = "Action \"{0}\" executed with error".format(entry.name())
-                details = e.message
-                messages.add(text, details)
+                messages.add(text, None, sys.exc_info())
             return self
         else:
             with self._menuStackLock:

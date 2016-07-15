@@ -82,11 +82,3 @@ def test_callingHasMultipleTimes_shouldReturnSameValue():
     messages.add("my message")
     assert messages.hasUnread() is True
     assert messages.hasUnread() is True
-
-
-def test_addShouldUseDefaultTextForMissingDetails():
-    messages._clear()
-    messages.add("my message")
-    unread = messages.getUnread()
-    assert len(unread) is 1
-    assert unread[0].details == "No details provided"

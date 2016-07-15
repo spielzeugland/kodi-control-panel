@@ -8,18 +8,19 @@ _archiveSize = 20
 
 
 class _Message(object):
-    def __init__(self, text, details):
+    def __init__(self, text, details, sysInfo):
         self.text = text
         self.details = details
+        self.sysInfo = sysInfo
         self.time = None  # TODO add timestamp
 
 
-def add(text, details="No details provided"):
+def add(text, details=None, sysInfo=None):
     with _lock:
         global _unread
         global _archive
         global _archiveSize
-        message = _Message(text, details)
+        message = _Message(text, details, sysInfo)
         _unread.insert(0, message)
         _archive.insert(0, message)
         if len(_archive) > _archiveSize:

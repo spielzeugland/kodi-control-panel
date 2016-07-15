@@ -96,9 +96,11 @@ def test_items_withCallback_shouldReturnCachedItemsWhenCallingSecondTime():
 
 def test_runAsyncShouldAddMessageInCaseOfError():
     messages._clear()
-    folder = mocks.FailingDynamicFolder("my failing folder", Exception("the exception message"))
+    someException = Exception("the exception message")
+    folder = mocks.FailingDynamicFolder("my failing folder", someException)
     folder._loadItemsWithoutLock()
     newMessages = messages.getUnread()
     assert len(newMessages) is 1
     assert newMessages[0].text == "Folder \"my failing folder\" could not be loaded"
-    assert newMessages[0].details == "the exception message"
+    assert newMessages[0].details is None
+    assert newMessages[0].sysInfo[1] is someException
