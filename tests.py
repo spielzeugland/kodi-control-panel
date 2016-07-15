@@ -1,2 +1,7 @@
 import pytest
-pytest.main(["-x", "test"])
+import sys
+
+
+errorCode = pytest.main(["-x", "test"])
+if __name__ == '__main__':
+    sys.exit(errorCode)
