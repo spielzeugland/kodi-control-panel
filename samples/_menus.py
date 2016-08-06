@@ -3,6 +3,7 @@ import sys
 from time import sleep
 import context
 import menu
+import messages
 
 
 class Action(menu.Action):
@@ -11,7 +12,7 @@ class Action(menu.Action):
         super(Action, self).__init__(name)
 
     def run(self, menu):
-        print("Executing %s" % self._name)
+        print("Executing \"%s\"" % self.name())
 
 
 class DynamicFolder(menu.DynamicFolder):
@@ -24,6 +25,16 @@ class DynamicFolder(menu.DynamicFolder):
     def _loadItems(self):
         sleep(self._loadingTimeout)
         return self._itemsToLoad
+
+
+class MessageAction(menu.Action):
+
+    def __init__(self, name):
+        super(MessageAction, self).__init__(name)
+
+    def run(self, menu):
+        messages.add("Message from \"%s\"" % self.name())
+
 
 folder1a = menu.Folder("Empty Sub Folder 1", [])
 folder1b = menu.Folder("Empty Sub Folder 2", [])
@@ -46,8 +57,8 @@ cd = DynamicFolder("CD", [cdTrack1, cdTrack2, cdTrack3], 5)
 favs = menu.Folder("Favourites", [])
 webradio = menu.Folder("Online radio", [])
 settings = menu.Folder("Settings", [])
-shutdown = Action("Now")
-reboot = Action("Restart")
+shutdown = MessageAction("Now")
+reboot = MessageAction("Restart")
 end = menu.Folder("Shutdown", [shutdown, reboot])
 kodiMainFolder = menu.Folder("Main", [cd, favs, webradio, settings, end])
 kodiMenu = menu.Menu(kodiMainFolder, menu.BackItem())

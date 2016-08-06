@@ -1,4 +1,6 @@
 import context
+import messages
+import traceback
 from _consoleDisplay import ConsoleDisplay
 from _menus import kodiMainFolder as menuMainFolder
 from menu import Menu
@@ -31,6 +33,14 @@ if __name__ == "__main__":
             prevMode = mode
             prevFolder = folder
             prevItem = item
+        if messages.hasUnread():
+            unreadMessages = messages.getUnread()
+            if len(unreadMessages) > 0:
+                print("Messages:")
+                for message in unreadMessages:
+                    print(message.text)
+                    if message.sysInfo:
+                        traceback.print_exception(message.sysInfo[0], message.sysInfo[1], message.sysInfo[2])
 
     console = ConsoleDisplay(controller, action)
     console.open()
