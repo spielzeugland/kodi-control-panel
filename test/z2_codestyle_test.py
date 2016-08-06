@@ -13,7 +13,7 @@ def _checkCodeStyle(folder):
 
 
 def test_sourceCodeShouldFollowPep8Ccodestyle():
-    _checkCodeStyle("./src")
+    _checkCodeStyle("./script.service.jogwheel")
 
 
 def test_samplesCodeShouldFollowPep8Ccodestyle():

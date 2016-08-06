@@ -34,14 +34,14 @@ def test_log_setShouldChangeLogInstance():
 
 @after
 def test_DefaultLogger_init_shouldCreateLoggerWithName():
-    logging = mocks.logging()
+    logging = mocks.Logging()
     _DefaultLogger("myName", logging.logger)
     assert logging.name == "myName"
 
 
 @after
 def test_DefaultLoger_error():
-    logging = mocks.logging()
+    logging = mocks.Logging()
     logger = _DefaultLogger("myName", logging.logger)
     message = "Message"
     arg1 = object()
@@ -52,7 +52,7 @@ def test_DefaultLoger_error():
 
 @after
 def test_error():
-    logging = mocks.logging()
+    logging = mocks.Logging()
     logger = _DefaultLogger("myName", logging.logger)
     log.set(logger)
 
@@ -65,7 +65,7 @@ def test_error():
 
 @after
 def test_DefaultLogger_warning():
-    logging = mocks.logging()
+    logging = mocks.Logging()
     logger = _DefaultLogger("myName", logging.logger)
     message = "Message"
     arg1 = object()
@@ -76,7 +76,7 @@ def test_DefaultLogger_warning():
 
 @after
 def test_warning():
-    logging = mocks.logging()
+    logging = mocks.Logging()
     logger = _DefaultLogger("myName", logging.logger)
     log.set(logger)
 
@@ -89,7 +89,7 @@ def test_warning():
 
 @after
 def test_DefaultLogger_info():
-    logging = mocks.logging()
+    logging = mocks.Logging()
     logger = _DefaultLogger("myName", logging.logger)
     message = "Message"
     arg1 = object()
@@ -100,7 +100,7 @@ def test_DefaultLogger_info():
 
 @after
 def test_info():
-    logging = mocks.logging()
+    logging = mocks.Logging()
     logger = _DefaultLogger("myName", logging.logger)
     log.set(logger)
 
@@ -113,7 +113,7 @@ def test_info():
 
 @after
 def test_DefaultLogger_debug():
-    logging = mocks.logging()
+    logging = mocks.Logging()
     logger = _DefaultLogger("myName", logging.logger)
     message = "Message"
     arg1 = object()
@@ -124,7 +124,7 @@ def test_DefaultLogger_debug():
 
 @after
 def test_debug():
-    logging = mocks.logging()
+    logging = mocks.Logging()
     logger = _DefaultLogger("myName", logging.logger)
     log.set(logger)
 

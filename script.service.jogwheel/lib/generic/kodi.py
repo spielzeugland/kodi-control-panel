@@ -1,10 +1,16 @@
+import log
+from time import sleep
 from proxy import Proxy
 
 
 class Kodi:
 
-    def __init__(self, proxy):
-        self._proxy = proxy
+    def __init__(self, rpcProxy, xbmc):
+        self._proxy = rpcProxy
+        if(xbmc is not None):
+            self._monitor = xbmc.Monitor()
+        else:
+            self._monitor = _SimpleMonitor()
 
     def getAddons(self):
         return self._proxy.Addons.GetAddons(content="audio")["addons"]
@@ -42,8 +48,18 @@ class Kodi:
     def reboot(self):
         self._proxy.System.Reboot()
 
+    def getMonitor(self):
+        return self._monitor
 
-class Local(Proxy):
+
+def local(xbmc):
+    instance = Kodi(_Local(xbmc), xbmc)
+    # TODO pass AddOn or it's id as argument
+    log.set(Log("script.service.jogwheel", xbmc))
+    return instance
+
+
+class _Local(Proxy):
 
     def __init__(self, xbmc):
         self._xbmc = xbmc
@@ -83,3 +99,12 @@ class Log(object):
     def _log(self, logLevel, msg, *args):
         parameters = [self._name, msg] + args
         self._xbmc.log("### [%s] - %s" .format(parameters), level=logLevel)  # TODO add all arguments
+
+
+class _SimpleMonitor(object):
+
+    def abortRequested(self):
+        return False
+
+    def waitForAbort(self, timeToWait):
+        sleep(timeToWait)

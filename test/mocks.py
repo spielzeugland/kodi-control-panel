@@ -1,6 +1,7 @@
 from time import sleep
 import context
 import menu
+import proxy
 import mocksKodi as kodi
 
 
@@ -151,7 +152,7 @@ def timerInMenuMode():
     return Timer(mainMode=False)
 
 
-class logging(object):
+class Logging(object):
 
     def __init__(self):
         self.name = None
@@ -172,3 +173,22 @@ class logging(object):
 
     def debug(self, message, *args):
         self.recorded["debug"] = {"message": message, "args": args}
+
+
+class Proxy(proxy.Proxy):
+
+    def send_request(self, method_name, is_notification, params):
+        pass
+
+
+class Xbmc(object):
+
+    abortRequested = False
+
+    class Monitor(object):
+
+        def abortRequested(self):
+            return Xbmc.abortRequested
+
+        def waitForAbort(self, timeToWait):
+            pass
