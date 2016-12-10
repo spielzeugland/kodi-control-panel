@@ -36,20 +36,6 @@ class MessageAction(menu.Action):
         messages.add("Message from \"%s\"" % self.name())
 
 
-folder1a = menu.Folder("Empty Sub Folder 1", [])
-folder1b = menu.Folder("Empty Sub Folder 2", [])
-folder1 = menu.Folder("Folder 1", [folder1a, folder1b])
-folder2a = menu.Folder("Empty Sub Folder 1", [])
-folder2b = menu.Folder("Empty Sub Folder 2", [])
-folder2 = menu.Folder("Folder 2", [folder2a, folder2b])
-a1 = Action("Action 1")
-a2 = Action("Action 2")
-a3 = Action("Action 3")
-folder3 = menu.Folder("Folder 3", [a1, a2, a3])
-emptyFolder = menu.Folder("Folder with no entries", [])
-mainFolder = menu.Folder("Main Menu", [folder1, folder2, folder3, emptyFolder])
-sampleMenu = menu.Menu(mainFolder, menu.BackItem())
-
 cdTrack1 = Action("Track 1")
 cdTrack2 = Action("Track 2")
 cdTrack3 = Action("Track 3")

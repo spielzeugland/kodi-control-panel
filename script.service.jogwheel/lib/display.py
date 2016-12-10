@@ -9,9 +9,8 @@ class Display(object):
         self._controller = controller
 
     def _configure(self):
-        GPIO.setmode(GPIO.BOARD)
-        GPIO.setup(shutdownPin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         # TODO make configurable
+        GPIO.setmode(GPIO.BOARD)
         self._lcd = CharLCD(pin_rw=5)
 
     def update(self):

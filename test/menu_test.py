@@ -218,6 +218,18 @@ def test_select_shouldExecuteBackItemIfSelected():
     assert backItem.runCnt == 1
 
 
+def test_select_emptyFolder_shouldDoNothing():
+    menu = Menu(emptyFolder)
+    assert menu.item() is menu._emptyItem
+    menu.select()
+    assert menu.item() is menu._emptyItem
+
+
+def test_withBackItem_shouldShowBackItemInEmptyFolder():
+    menu = Menu(emptyFolder, backItem)
+    assert menu.item() is backItem
+
+
 def test_back():
     menu = Menu(mainFolder)
     menu.select()

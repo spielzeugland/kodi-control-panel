@@ -4,7 +4,7 @@ from threading import Lock
 _lock = Lock()
 _unread = []
 _archive = []
-_archiveSize = 20
+_archiveSize = 20  # TODO Make configurable
 
 
 class _Message(object):

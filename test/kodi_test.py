@@ -30,12 +30,6 @@ def test_withoutXbmc_getMonitor_isAbortRequested_shouldReturnFalse():
     assert kodi.getMonitor().abortRequested() is False
 
 
-def test_withoutXbmc_getMonitor_isAbortRequested_shouldReturnFalse():
-    proxy = mocks.Proxy()
-    kodi = Kodi(proxy, None)
-    assert kodi.getMonitor().abortRequested() is False
-
-
 def test_withoutXbmc_getMonitor_waitForAbort_shouldDoNothing():
     proxy = mocks.Proxy()
     kodi = Kodi(proxy, None)

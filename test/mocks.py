@@ -92,15 +92,6 @@ class NeverLoadingFolder(DynamicFolder):
         pass
 
 
-class Controller(object):
-
-    def __init__(self):
-        self.exitMenuModeCnt = 0
-
-    def exitMenuMode(self):
-        self.exitMenuModeCnt += 1
-
-
 class Menu(object):
 
     def __init__(self, isRoot=True):

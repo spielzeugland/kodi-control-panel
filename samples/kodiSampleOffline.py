@@ -1,18 +1,16 @@
 import context
 import main
 from _menus import kodiMainFolder as menuMainFolder
-from menu import Menu
-from controller import Controller, BackItem
+from menu import Menu, BackItem
+from controller import Controller
 from console import Console
 from kodi import Kodi
 
 if __name__ == "__main__":
     kodi = Kodi(None, None)
 
-    backItem = BackItem()
-    menu = Menu(menuMainFolder, backItem)
+    menu = Menu(menuMainFolder, BackItem())
     controller = Controller(None, menu)
-    backItem.controller = controller
 
     console = Console(controller)
     inputs = console

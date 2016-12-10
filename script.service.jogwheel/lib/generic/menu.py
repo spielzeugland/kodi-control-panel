@@ -32,12 +32,14 @@ class AsyncAction(Action):
         super(AsyncAction, self).__init__(name)
         self._thread = None
 
+    # TODO locking looks incorrect in this class
     def run(self, menu):
         if not self._isRunning():
             self._scheduleRun()
 
     @withLock
     def _scheduleRun(self):
+        # TODO log exceptions in case execution fails
         self._thread = Thread(target=self._asyncRun)
         self._thread.setDaemon(True)
         self._thread.start()
@@ -115,6 +117,9 @@ class _LoadingItem(Action):
         super(_LoadingItem, self).__init__(text)
 
 
+_LOADING_ITEM_INSTANCE = _LoadingItem()
+
+
 class Menu(object):
 
     def __init__(self, root, backItem=None):
@@ -122,7 +127,7 @@ class Menu(object):
         self._menuStack = []
         self._backItem = backItem
         self._emptyItem = _EmptyItem()
-        self._loadingItem = _LoadingItem()
+        self._loadingItem = _LOADING_ITEM_INSTANCE
         self._menuStackLock = RLock()
         self._folderLock = RLock()
         self._setCurrentFolder(root)
@@ -160,7 +165,7 @@ class Menu(object):
                 if self._currentFolder is not folder:
                     return
                 self._currentItems = items
-                if index >= len(self._currentItems):
+                if 0 < index >= len(self._currentItems):
                     self._currentIndex = len(self._currentItems) - 1
                 else:
                     self._currentIndex = index
@@ -184,7 +189,10 @@ class Menu(object):
             if self._currentIndex == length and self._backItem is not None:
                 entry = self._backItem
             else:
-                entry = self._currentItems[self._currentIndex]
+                if self._currentIndex < length:
+                    entry = self._currentItems[self._currentIndex]
+                else:
+                    return self
 
         if hasattr(entry.__class__, "run") and callable(getattr(entry.__class__, "run")):
             try:

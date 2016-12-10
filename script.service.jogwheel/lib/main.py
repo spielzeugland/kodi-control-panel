@@ -7,7 +7,7 @@ def start(kodi, controller, inputs, display):
 
 def _mainloop(kodi, controller, inputs, display):
     monitor = kodi.getMonitor()
-    while not inputs.shutdown() or monitor.abortRequested():
+    while not inputs.shutdown() and not monitor.abortRequested():
 
         # TODO using simple polling in a mainloop for now
         display.update()

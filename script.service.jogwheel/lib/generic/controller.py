@@ -21,21 +21,21 @@ class _ModeTimer(object):
         return self._mainMode
 
     @withLock
-    def _timerFunction(self):
+    def _backToMainMode(self):
         self._mainMode = True
 
     @withLock
     def update(self):
         if self._mainMode is True:
             self._mainMode = False
-            self._timer = Timer(self._timeout, self._timerFunction)
+            self._timer = Timer(self._timeout, self._backToMainMode)
             self._timer.setDaemon(True)
             self._timer.start()
             return False
         else:
             if self._timer is not None:
                 self._timer.cancel()
-                self._timer = Timer(self._timeout, self._timerFunction)
+                self._timer = Timer(self._timeout, self._backToMainMode)
                 self._timer.setDaemon(True)
                 self._timer.start()
             return True
@@ -65,7 +65,10 @@ class Controller(object):
 
     def back(self):
         if self._timer.update():
-            self.menu.back()
+            if self.menu.isRoot():
+                self.exitMenuMode()
+            else:
+                self.menu.back()
 
     def mode(self):
         if self._timer.isMainMode():
@@ -75,16 +78,3 @@ class Controller(object):
 
     def exitMenuMode(self):
         self._timer.cancel()
-
-
-class BackItem(menu.Action):
-
-    def __init__(self, name=".."):
-        super(BackItem, self).__init__(name)
-        self.controller = None
-
-    def run(self, menu):
-        if self.controller and menu.isRoot():
-            self.controller.exitMenuMode()
-        else:
-            menu.back()

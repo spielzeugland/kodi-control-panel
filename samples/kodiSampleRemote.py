@@ -1,8 +1,8 @@
 import context
 import main
 from console import Console
-from menu import Menu, Folder
-from controller import Controller, Mode, BackItem
+from menu import Menu, Folder, BackItem
+from controller import Controller, Mode
 from kodiMenu import AddonFolder, FavouritesFolder, ShutdownAction, RebootAction
 from proxy import Server
 from kodi import Kodi
@@ -19,10 +19,8 @@ if __name__ == "__main__":
     shutdownFolder = Folder("Shutdown", [ShutdownAction(kodi, "Now"), RebootAction(kodi)])
     rootFolder = Folder("root", [AddonFolder(kodi), FavouritesFolder(kodi), shutdownFolder])
 
-    backItem = BackItem()
-    menu = Menu(rootFolder, backItem)
+    menu = Menu(rootFolder, BackItem())
     controller = Controller(None, menu)
-    backItem.controller = controller
 
     console = Console(controller)
     inputs = console

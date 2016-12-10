@@ -52,8 +52,15 @@ def test_playerMode_backShouldNotDelegateToMenu():
     assert menu.backCnt == 0
 
 
-def test_menuMode_backShouldDelegateToMenu():
-    menu = mocks.Menu()
+def test_menuMode_backOnRootFolder_shouldLeaveMenuMode():
+    menu = mocks.Menu(isRoot=True)
+    c = Controller(player, menu, mocks.timerInMenuMode())
+    c.back()
+    assert menu.backCnt == 0
+
+
+def test_menuMode_back_shouldDelegateToMenu():
+    menu = mocks.Menu(isRoot=False)
     c = Controller(player, menu, mocks.timerInMenuMode())
     c.back()
     assert menu.backCnt == 1

@@ -1,9 +1,7 @@
 import context_samples
 import _menus
-import _consoleDisplay
-import controllerSample
-import kodiSample
-import menuSample
+import kodiSampleOffline
+import kodiSampleRemote
 
 
 def test_importsAreCheckingSyntax():
