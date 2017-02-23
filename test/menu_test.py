@@ -306,6 +306,23 @@ def test_updateItemsForFolder_shouldDoNothingForDifferentFolder():
     assert menu.item() is folder1
 
 
+def test_mainFolder_shouldReturnNoneInRootFolder():
+    menu = Menu(mainFolder)
+    assert menu.mainFolder() is None
+
+
+def test_mainFolder_shouldReturnCurrentMainFolder():
+    menu = Menu(mainFolder)
+    menu.select()
+    assert menu.folder() is folder1
+    assert menu.mainFolder() is folder1
+    menu.select()
+    assert menu.folder() is folder1a
+    assert menu.mainFolder() is folder1
+    menu.back().back()
+    assert menu.mainFolder() is None
+
+
 def test_Action_init_shouldTakeName():
     assert Action("myName").name() == "myName"
 

@@ -13,12 +13,13 @@ class Kodi:
             self._monitor = _SimpleMonitor()
 
     def getAddons(self):
-        return self._proxy.Addons.GetAddons(content="audio")["addons"]
+        response = self._proxy.Addons.GetAddons(content="audio")
+        return _noneAsEmptyList(response["addons"])
 
     def getFavourites(self):
         properties = ["window", "path", "windowparameter"]
         response = self._proxy.Favourites.GetFavourites(type="media", properties=properties)
-        return response["favourites"]
+        return _noneAsEmptyList(response["favourites"])
 
     def getAddonDetails(self, addonId):
         response = self._proxy.Addons.GetAddonDetails(addonid=addonId, properties=["name"])
@@ -27,7 +28,7 @@ class Kodi:
     def getFiles(self, url):
         properties = ["title", "file"]
         response = self._proxy.Files.GetDirectory(properties=properties, directory=url, media="files")
-        return response["files"]
+        return _noneAsEmptyList(response["files"])
 
     def play(self, url):
         params = {"file": url}
@@ -39,7 +40,7 @@ class Kodi:
             playerid = players[0]["playerid"]
             properties = ["title", "album", "artist", "season", "episode", "duration", "showtitle", "tvshowid", "file", "streamdetails"]
             response = self._proxy.Player.GetItem(properties=properties, playerid=playerid)
-            return response["item"]["label"]
+            return response["item"]  # ["label"]
         return None
 
     def shutdown(self):
@@ -50,6 +51,12 @@ class Kodi:
 
     def getMonitor(self):
         return self._monitor
+
+
+def _noneAsEmptyList(entries):
+    if entries is None:
+        entries = []
+    return entries
 
 
 def local(xbmc):

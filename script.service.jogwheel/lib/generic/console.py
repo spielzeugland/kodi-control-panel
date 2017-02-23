@@ -6,43 +6,37 @@ import messages
 import controller
 
 
-class Console(object):
+class Output(object):
+
+    def __init__(self, controller):
+        self._controller = controller
+
+    def writePlayer(self, controller):
+        print("Player")
+
+    def writeMenu(self, controller):
+        menu = controller.menu
+        if menu.isRoot():
+            folder = "Menu"
+        else:
+            folder = menu.folder().name()
+        item = menu.item()
+        text = "{0} > {1} [{2}/{3}]".format(folder, item.name(), menu._currentIndex, len(menu._currentItems))
+        print(text)
+
+    def writeMessage(self, message):
+        print("Message: {0}".format(message))
+
+    def clear(self):
+        pass
+
+
+class Input(object):
 
     def __init__(self, controller):
         self._controller = controller
         self._shouldStop = False
-        self._prevMode = None
-        self._prevFolder = None
-        self._prevItem = None
         self._configure()
-
-    def update(self):
-        menu = self._controller.menu
-        mode = self._controller.mode()
-        folder = menu.folder()
-        item = menu.item()
-        if mode is not self._prevMode or folder is not self._prevFolder or item is not self._prevItem:
-            if mode is controller.Mode.Player:
-                print("Player")
-            else:
-                print("Menu: {0} > {1} [{2}/{3}]".format(folder.name(), item.name(), menu._currentIndex, len(menu._currentItems)))
-            self._prevMode = mode
-            self._prevFolder = folder
-            self._prevItem = item
-        if messages.hasUnread():
-            unreadMessages = messages.getUnread()
-            if len(unreadMessages) > 0:
-                print("Messages:")
-                for message in unreadMessages:
-                    print(message.text)
-                    if message.sysInfo:
-                        traceback.print_exception(message.sysInfo[0], message.sysInfo[1], message.sysInfo[2])
-
-    def write(self, string):
-        print(string)
-
-    def clear(self):
-        pass
 
     def _run(self):
         cmd = ""

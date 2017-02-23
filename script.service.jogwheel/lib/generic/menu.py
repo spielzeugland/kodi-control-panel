@@ -130,10 +130,11 @@ class Menu(object):
         self._loadingItem = _LOADING_ITEM_INSTANCE
         self._menuStackLock = RLock()
         self._folderLock = RLock()
-        self._setCurrentFolder(root)
-        # self._currentFolder
+        self._mainFolder = None
+        self._currentFolder = None
         # self._currentItems
         # self._currentIndex
+        self._setCurrentFolder(root)
 
     def _setCurrentFolder(self, folder, index=0):
         if getattr(folder, "async", False):
@@ -150,14 +151,23 @@ class Menu(object):
             messages.add(text, None, sys.exc_info())
         if newItems is not None:
             with self._folderLock:
-                self._currentFolder = folder
+                self._setCurrentFolderAndStoreMainFolder(folder)
                 self._updateItemsForFolder(folder, newItems, index)
 
     def _setCurrentFolderAsynchron(self, folder, index):
         with self._folderLock:
-            self._currentFolder = folder
+            self._setCurrentFolderAndStoreMainFolder(folder)
             self._updateItemsForFolder(folder, [self._loadingItem])
         folder.items(lambda newItems: self._updateItemsForFolder(folder, newItems, index))
+
+    def _setCurrentFolderAndStoreMainFolder(self, folder):
+        with self._folderLock:
+            if self._currentFolder is not folder:
+                if self.isRoot():
+                    self._mainFolder = folder
+                self._currentFolder = folder
+                if self.isRoot():
+                    self._mainFolder = None
 
     def _updateItemsForFolder(self, folder, items=[], index=0):
         if isinstance(items, list):
@@ -239,3 +249,7 @@ class Menu(object):
     def isRoot(self):
         with self._folderLock:
             return self._root == self._currentFolder
+
+    def mainFolder(self):
+        with self._folderLock:
+            return self._mainFolder

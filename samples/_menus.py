@@ -12,7 +12,7 @@ class Action(menu.Action):
         super(Action, self).__init__(name)
 
     def run(self, menu):
-        print("Executing \"%s\"" % self.name())
+        messages.add("Message from \"%s\"" % self.name())
 
 
 class DynamicFolder(menu.DynamicFolder):
@@ -27,24 +27,20 @@ class DynamicFolder(menu.DynamicFolder):
         return self._itemsToLoad
 
 
-class MessageAction(menu.Action):
-
-    def __init__(self, name):
-        super(MessageAction, self).__init__(name)
-
-    def run(self, menu):
-        messages.add("Message from \"%s\"" % self.name())
-
-
 cdTrack1 = Action("Track 1")
 cdTrack2 = Action("Track 2")
 cdTrack3 = Action("Track 3")
 cd = DynamicFolder("CD", [cdTrack1, cdTrack2, cdTrack3], 5)
 favs = menu.Folder("Favourites", [])
-webradio = menu.Folder("Online radio", [])
-settings = menu.Folder("Settings", [])
-shutdown = MessageAction("Now")
-reboot = MessageAction("Restart")
+station1 = Action("Station 1")
+station2 = Action("Station 2")
+station3 = Action("Station 3")
+webradio = DynamicFolder("Online radio", [station1, station2, station3])
+display = menu.Folder("Display", [])
+sound = menu.Folder("Sound", [])
+settings = menu.Folder("Settings", [display, sound])
+shutdown = Action("Now")
+reboot = Action("Restart")
 end = menu.Folder("Shutdown", [shutdown, reboot])
 kodiMainFolder = menu.Folder("Main", [cd, favs, webradio, settings, end])
 kodiMenu = menu.Menu(kodiMainFolder, menu.BackItem())

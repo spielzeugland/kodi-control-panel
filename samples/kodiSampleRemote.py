@@ -1,28 +1,29 @@
+import getpass
 import context
-import main
-from console import Console
-from menu import Menu, Folder, BackItem
-from controller import Controller, Mode
-from kodiMenu import AddonFolder, FavouritesFolder, ShutdownAction, RebootAction
+import mainloop
+import console
+import simpleDisplay
+import configuredMenu as configuredMenu
 from proxy import Server
 from kodi import Kodi
 
 
+_debug = True
+
+
 if __name__ == "__main__":
-    host = "http://osmc/jsonrpc"
+    host = "http://osmc:8080/jsonrpc"
     user = "osmc"
-    pwd = "osmc"
+    pwd = getpass.getpass()
 
     rpcProxy = Server(host, auth=(user, pwd))
-    kodi = Kodi(rpcProxy)
+    kodi = Kodi(rpcProxy, None)
 
-    shutdownFolder = Folder("Shutdown", [ShutdownAction(kodi, "Now"), RebootAction(kodi)])
-    rootFolder = Folder("root", [AddonFolder(kodi), FavouritesFolder(kodi), shutdownFolder])
+    controller = configuredMenu.create(kodi)
 
-    menu = Menu(rootFolder, BackItem())
-    controller = Controller(None, menu)
+    inputs = console.Input(controller)
+    display = simpleDisplay.Size20x4(controller)
+    display._debug = _debug
 
-    console = Console(controller)
-    inputs = console
-    display = console
-    main.start(kodi, controller, inputs, display)
+    mainloop._debug = _debug
+    mainloop.start(kodi, controller, inputs, display)
