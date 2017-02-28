@@ -14,8 +14,8 @@ class Inputs(object):
 
     def _configure(self):
         # TODO make configurable
-        shutdownPin = 19
-        channelA = 18
+        shutdownPin = 5
+        channelA = 11
         channelB = 13
 
         GPIO.setmode(GPIO.BOARD)

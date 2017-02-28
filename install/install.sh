@@ -9,5 +9,7 @@ apt-get install -y python-dev gcc
 pip install RPi.GPIO
 echo ">>> create user group 'gpio'"
 python ./create_gpio_user_permission.py
+echo ">>> install RPLCD"
+pip install RPLCD
 
 # requires restart...

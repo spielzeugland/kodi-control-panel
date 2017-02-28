@@ -46,6 +46,7 @@ View coverage report run ``coverage html`` and open `index.html` from `coverage`
 
 What is missing?
 -----------
+- Configuration of PINs etc.
 - Logging
 - Displaying messages
 - Kodi Plugin wrapper

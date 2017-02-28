@@ -12,7 +12,7 @@ class Display(Size20x4):
     def _configure(self):
         # TODO make configurable
         GPIO.setmode(GPIO.BOARD)
-        self._lcd = CharLCD(pin_rw=5)
+        self._lcd = CharLCD(pin_backlight=40, backlight_mode=LCD.BacklightMode.active_high)
 
     def _write(self, lines):
         string = ""
