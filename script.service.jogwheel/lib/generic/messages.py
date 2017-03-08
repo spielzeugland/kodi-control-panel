@@ -17,9 +17,7 @@ class _Message(object):
 
 def add(text, details=None, sysInfo=None):
     with _lock:
-        global _unread
-        global _archive
-        global _archiveSize
+        global _unread, _archive, _archiveSize
         message = _Message(text, details, sysInfo)
         _unread.insert(0, message)
         _archive.insert(0, message)

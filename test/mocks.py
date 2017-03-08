@@ -5,6 +5,18 @@ import proxy
 import mocksKodi as kodi
 
 
+class ControllerListener(object):
+
+    def __init__(self):
+        self.updateCount = 0
+
+    def update(self, controller):
+        self.updateCount = self.updateCount + 1
+
+    def reset(self):
+        self.updateCount = 0
+
+
 class Action(menu.Action):
 
     def __init__(self, name):

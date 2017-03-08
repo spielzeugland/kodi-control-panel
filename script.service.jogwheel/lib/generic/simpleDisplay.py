@@ -1,15 +1,42 @@
-import controller
 import string
+import traceback
+import messages
+from controller import Mode
 
 
 class Size20x4(object):
 
-    def __init__(self, controller):
-        self._controller = controller
+    def __init__(self):
         self._columns = 20
         self._rows = 4
         self._debug = False
         self._emptyLine = self._columns * " "
+        self._currentFolder = None
+        self._currentItem = None
+        self._currentMode = None
+
+    def update(self, controller):
+        lastMode = self._currentMode
+        self._currentMode = controller.mode()
+        lastItem = self._currentItem
+        self._currentItem = controller.menu.item()
+        lastFolder = self._currentFolder
+        self._currentFolder = controller.menu.folder()
+
+        modeChanged = lastMode is not self._currentMode
+        itemChanged = lastItem is not self._currentItem
+        folderChanged = lastFolder is not self._currentFolder
+
+        if modeChanged:
+            if self._currentMode is Mode.Player:
+                self.writePlayer(controller)
+            else:
+                self.writeMenu(controller)
+        elif itemChanged or folderChanged:
+            self.writeMenu(controller)
+
+        if self._debug:
+            _printMessages()
 
     def writePlayer(self, controller):
         lines = _asLines(">>Player", self._columns, self._rows)
@@ -106,3 +133,14 @@ def _center(text, length):
             return (left * " ") + text + (right * " ")
         else:
             return text
+
+
+def _printMessages():
+    if messages.hasUnread():
+        unreadMessages = messages.getUnread()
+        if len(unreadMessages) > 0:
+            print("Messages:")
+            for message in unreadMessages:
+                print(message.text)
+                if message.sysInfo is not None:
+                    traceback.print_exception(message.sysInfo[0], message.sysInfo[1], message.sysInfo[2])

@@ -2,39 +2,14 @@ import time
 import sys
 import traceback
 from threading import Thread
+from events import Event
 import messages
-import controller
-
-
-class Output(object):
-
-    def __init__(self, controller):
-        self._controller = controller
-
-    def writePlayer(self, controller):
-        print("Player")
-
-    def writeMenu(self, controller):
-        menu = controller.menu
-        if menu.isRoot():
-            folder = "Menu"
-        else:
-            folder = menu.folder().name()
-        item = menu.item()
-        text = "{0} > {1} [{2}/{3}]".format(folder, item.name(), menu._currentIndex, len(menu._currentItems))
-        print(text)
-
-    def writeMessage(self, message):
-        print("Message: {0}".format(message))
-
-    def clear(self):
-        pass
 
 
 class Input(object):
 
-    def __init__(self, controller):
-        self._controller = controller
+    def __init__(self, queue):
+        self._queue = queue
         self._shouldStop = False
         self._configure()
 
@@ -43,26 +18,30 @@ class Input(object):
         while not self._shouldStop and not cmd == "exit":
             cmd = self._read()
             if cmd == "x":
-                self._controller.moveBy(1)
+                self._queueEvent("moveBy", 1)
             elif cmd == "xx":
-                self._controller.moveBy(2)
+                self._queueEvent("moveBy", 2)
             elif cmd == "y":
-                self._controller.moveBy(-1)
+                self._queueEvent("moveBy", -1)
             elif cmd == "yy":
-                self._controller.moveBy(-2)
+                self._queueEvent("moveBy", -2)
             elif cmd == "s":
-                self._controller.select()
+                self._queueEvent("click")
             elif cmd == "b":
-                self._controller.back()
-            elif cmd == "r":
-                self._controller.exitMenuMode()
+                self._queueEvent("longClick")
+            #  elif cmd == "r":
+            #     self._controller.exitMenuMode()
             elif cmd == "exit":
-                self.close()
+                self._queueEvent("veryLongClick")
+                # self.close()
             elif cmd == "help":
                 self._printHelp()
             else:
                 print("Unknown command: %s" % cmd)
                 self._printHelp()
+
+    def _queueEvent(self, event, data=None):
+        self._queue.put_nowait(Event(event, data))
 
     def shutdown(self):
         return self._shouldStop
@@ -78,7 +57,7 @@ class Input(object):
                 print("  y      Previous")
                 print("  s      Select")
                 print("  b      Back")
-                print("  r      Reset")
+                # print("  r      Reset")
                 print("  exit   Shutdown")
                 print("  yy     2xPrevious")
                 print("  xx     2xNext")

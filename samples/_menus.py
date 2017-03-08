@@ -1,7 +1,7 @@
 import os
 import sys
 from time import sleep
-import context
+import _context
 import menu
 import messages
 

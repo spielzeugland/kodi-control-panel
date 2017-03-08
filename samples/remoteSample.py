@@ -1,9 +1,10 @@
 import getpass
-import context
-import mainloop
+import _context
+import controller
 import console
+import events
 import simpleDisplay
-import configuredMenu as configuredMenu
+import configuredMenu
 from proxy import Server
 from kodi import Kodi
 
@@ -19,11 +20,14 @@ if __name__ == "__main__":
     rpcProxy = Server(host, auth=(user, pwd))
     kodi = Kodi(rpcProxy, None)
 
-    controller = configuredMenu.create(kodi)
+    queue = events.createQueue()
 
-    inputs = console.Input(controller)
-    display = simpleDisplay.Size20x4(controller)
+    inputs = console.Input(queue)
+    display = simpleDisplay.Size20x4()
     display._debug = _debug
 
-    mainloop._debug = _debug
-    mainloop.start(kodi, controller, inputs, display)
+    theController = configuredMenu.create(kodi, display.update)
+
+    queue.worker.start(theController.handle)
+
+    queue.worker.join()

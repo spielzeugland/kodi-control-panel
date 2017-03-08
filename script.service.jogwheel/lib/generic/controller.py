@@ -1,6 +1,7 @@
 from threading import Timer
 from synchronized import createLock, withLock
 import menu
+import events
 
 
 class Mode(object):
@@ -50,18 +51,23 @@ class _ModeTimer(object):
 
 class Controller(object):
 
-    def __init__(self, player, menu, timer=_ModeTimer()):
+    def __init__(self, player, menu, listener=None, timer=_ModeTimer()):
         self.player = player
         self.menu = menu
         self._timer = timer
+        self._listener = listener
+        # TODO temporary approach for initial update of display
+        self._notifyListener()
 
     def select(self):
         if self._timer.update():
             self.menu.select()
+        self._notifyListener()
 
     def moveBy(self, offset):
         if self._timer.update():
             self.menu.moveBy(offset)
+        self._notifyListener()
 
     def back(self):
         if self._timer.update():
@@ -69,6 +75,11 @@ class Controller(object):
                 self.exitMenuMode()
             else:
                 self.menu.back()
+                self._notifyListener()
+
+    def exitMenuMode(self):
+        self._timer.cancel()
+        self._notifyListener()
 
     def mode(self):
         if self._timer.isMainMode():
@@ -76,5 +87,20 @@ class Controller(object):
         else:
             return Mode.Menu
 
-    def exitMenuMode(self):
-        self._timer.cancel()
+    def _notifyListener(self):
+        if self._listener is not None:
+            self._listener(self)
+
+    def handle(self, event):
+        name = event.name
+        if name is "moveBy":
+            self.moveBy(event.data)
+            return True
+        elif name is "click":
+            self.select()
+            return True
+        elif name is "longClick":
+            self.back()
+            return True
+        elif name is "veryLongClick":
+            return False

@@ -5,8 +5,8 @@ from simpleDisplay import Size20x4
 
 class Display(Size20x4):
 
-    def __init__(self, controller):
-        super(Display, self).__init__(controller)
+    def __init__(self):
+        super(Display, self).__init__()
         self._configure()
 
     def _configure(self):
@@ -16,6 +16,7 @@ class Display(Size20x4):
 
     def _write(self, lines):
         string = ""
+        # TODO what is the pythonic way for this?
         for line in lines:
             string = string + line
         self._lcd.write_string(string)

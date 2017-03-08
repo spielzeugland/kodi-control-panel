@@ -1,18 +1,17 @@
 import RPi.GPIO as GPIO
 
 from rotary_encoder import RotaryEncoder
-from button_listener import ShutdownListener
+from button_listener import ButtonListener
 
 
 class Inputs(object):
 
-    def __init__(self, controller):
+    def __init__(self, queue):
         self._button = None
         self._rotary = None
-        self._controller = controller
-        self._configure()
+        self._configure(queue)
 
-    def _configure(self):
+    def _configure(self, queue):
         # TODO make configurable
         shutdownPin = 5
         channelA = 11
@@ -21,12 +20,12 @@ class Inputs(object):
         GPIO.setmode(GPIO.BOARD)
         GPIO.setup(shutdownPin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
-        self._rotary = RotaryEncoder.CyclesWorker(channelA, channelB)
+        self._rotary = RotaryEncoder.Worker(channelA, channelB, queue)
         self._rotary.start()
-        self._button = ShutdownListener(shutdownPin)
+        self._button = ShutdownListener(shutdownPin, queue)
         self._button.start()
 
     def close(self):
-        # TODO  error handling
+        # TODO error handling
         self._button.stop()
         self._rotary.stop()

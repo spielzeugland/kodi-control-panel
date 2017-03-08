@@ -115,54 +115,30 @@ class RotaryEncoder:
         self.remainder %= self.steps_per_cycle  # remainder always remains positive
         return cycles
 
-    class DeltaWorker(threading.Thread):
-        def __init__(self, a_pin, b_pin):
+    class Worker(threading.Thread):
+
+        def __init__(self, a_pin, b_pin, queue, cycles=True):
             threading.Thread.__init__(self)
-            self.lock = threading.Lock()
-            self.stopping = False
-            self.encoder = RotaryEncoder(a_pin, b_pin)
             self.daemon = True
-            self.delta = 0
-            self.delay = 0.001
+            self._lock = threading.Lock()
+            self._queue = queue
+            self._cycles = cycles
+            self._stopping = False
+            self._encoder = RotaryEncoder(a_pin, b_pin)
+            self._delay = 0.01
 
         def run(self):
-            while not self.stopping:
-                delta = self.encoder.get_delta()
-                with self.lock:
-                    self.delta += delta
-                time.sleep(self.delay)
+            while True:
+                with self._lock:
+                    if self._stopping:
+                        return
+                if self._cycles:
+                    delta = self._encoder.get_cycles()
+                else:
+                    delta = self._encoder.get_delta()
+                self._queue.put_nowait({"name": "moveBy", "data": delta})
+                time.sleep(self._delay)
 
         def stop(self):
-            self.stopping = True
-
-        def get_delta(self):
-            with self.lock:
-                delta = self.delta
-                self.delta = 0
-            return delta
-
-    class CyclesWorker(threading.Thread):
-        def __init__(self, a_pin, b_pin):
-            threading.Thread.__init__(self)
-            self.lock = threading.Lock()
-            self.stopping = False
-            self.encoder = RotaryEncoder(a_pin, b_pin)
-            self.daemon = True
-            self.delta = 0
-            self.delay = 0.001
-
-        def run(self):
-            while not self.stopping:
-                delta = self.encoder.get_cycles()
-                with self.lock:
-                    self.delta += delta
-                time.sleep(self.delay)
-
-        def stop(self):
-            self.stopping = True
-
-        def get_delta(self):
-            with self.lock:
-                delta = self.delta
-                self.delta = 0
-            return delta
+            with self._lock:
+                self._stopping = True

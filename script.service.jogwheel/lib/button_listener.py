@@ -3,70 +3,65 @@ import time
 import threading
 
 
+def _asEvent(name):
+    return {"name": name, "data": None}
+
+
 class ShutdownListener(threading.Thread):
 
-    def __init__(self, shutdownPin):
+    def __init__(self, pin, queue):
         threading.Thread.__init__(self)
         self.daemon = True
-        self.lock = threading.Lock()
-        self.shutdownPin = shutdownPin
-        GPIO.setup(shutdownPin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-        self.count = 0
-        self.shutdownState = False
-        self.selectState = False
-        self.backState = False
-        self.delay = 0.2
-        self.factor = 1 / self.delay
-        self.select_delay = self.factor * 0.5
-        self.back_delay = self.factor * 2
-        self.shutdown_delay = self.factor * 5
-        self._stopping = False
+        self._running = True
+        self._lock = threading.Lock()
+        self._pin = pin
+        self._queue = queue
+        GPIO.setup(self._pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        self._count = 0
+        self._delay = 0.2
+        queriesPerSecond = 1 / self._delay
+        self._clickDelay = queriesPerSecond * 0.5  # up to 0.5s is click
+        self._longClickDelay = queriesPerSecond * 2  # up to 2s is longClick
+        self._veryLongClickDelay = queriesPerSecond * 5  # from 5s is veryLongClick
 
     def run(self):
-        while not self._stopping:
-            GPIO.wait_for_edge(self.shutdownPin, GPIO.BOTH)
+        # TODO proper synchronization of _running
+        while self._running:
+            GPIO.wait_for_edge(self._pin, GPIO.BOTH)
 
-            while not self._stopping:
-                current = not GPIO.input(self.shutdownPin)
+            while self._running:
+                current = not GPIO.input(self._pin)
                 # print("read %s" % current)
-                with self.lock:
-                    specificWait = 0
-                    if current:
-                        self.count += 1
-                        if self.count > self.shutdown_delay:
-                            self.shutdownState = True
-                            return
-                    else:
-                        if(0 < self.count < self.select_delay):
-                            self.selectState = True
-                            specificWait = 1
-                        elif (self.select_delay < self.count < self.back_delay):
-                            self.backState = True
-                            specificWait = 2
-                        self.count = 0
-                        break
-                if(specificWait > 0):
+                specificWait = 0
+                if current:
+                    self._count += 1
+                    if self._count > self._veryLongClickDelay:
+                        self._veryLongClick()
+                        # TODO break here and let owner decide
+                        return
+                else:
+                    if 0 < self._count <= self._clickDelay:
+                        self._click()
+                        specificWait = 1
+                    elif self._clickDelay < self._count <= self._longClickDelay:
+                        self._longClick()
+                        specificWait = 2  # TODO why do we wait longer here?
+                    self._count = 0
+                    break
+                if specificWait > 0:
                     time.sleep(specificWait)
                 else:
-                    time.sleep(self.delay)
+                    time.sleep(self._delay)
 
-    def shutdown(self):
-        with self.lock:
-            temp = self.shutdownState
-            self.shutdownState = False
-            return temp
+    def _click(self):
+        self._queue.put_nowait(_asEvent("click"))
 
-    def selected(self):
-        with self.lock:
-            temp = self.selectState
-            self.selectState = False
-            return temp
+    def _longClick(self):
+        self._queue.put_nowait(_asEvent("longClick"))
 
-    def back(self):
-        with self.lock:
-            temp = self.backState
-            self.backState = False
-            return temp
+    def _veryLongClick(self):
+        self._queue.put_nowait(_asEvent("veryLongClick"))
 
     def stop(self):
-        self.stopping = True
+        with self._lock:
+            self._running = False
