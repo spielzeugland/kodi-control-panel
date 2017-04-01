@@ -39,7 +39,9 @@ class Size20x4(object):
             _printMessages()
 
     def writePlayer(self, controller):
-        lines = _asLines(">>Player", self._columns, self._rows)
+        player = controller.player
+        item = player.item()
+        lines = _asLines(item, self._columns, self._rows)
         self._write(lines)
 
     def writeMenu(self, controller):
