@@ -1,7 +1,7 @@
 import xbmc
 import lib.generic.events as events
 import lib.generic.kodi as kodi
-import lib.configuredMenu as menu
+import lib.configuredMenu as configuredMenu
 from lib.display import Display
 from lib.inputs import Inputs
 
@@ -9,20 +9,24 @@ from lib.inputs import Inputs
 if __name__ == "__main__":
     try:
         localKodi = kodi.local(xbmc)
-        controller = menu.create(localKodi)
 
-        queue = events.createQueue
+        queue = events.createQueue()
 
-        inputs = Inputs(controller, queue)
+        inputs = Inputs(queue)
         display = Display()
 
-        queue.worker.start(controller.handle)
-        # TODO use kodi monitor for proper shutdown handling
-        # queue.worker.join()
+        theController = configuredMenu.create(localKodi, display.update)
 
-    except Exception as e:
+        queue.worker.start(theController.handle)
+
+        monitor = localKodi.getMonitor()
+        while not monitor.abortRequested():
+            if monitor.waitForAbort(10):
+                break
+
         # TODO exception handling
-        display.write("Error")
+        # except Exception as e:
+        #   display.write("Error")
     finally:
         if(inputs is not None):
             inputs.close()

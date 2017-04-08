@@ -6,10 +6,13 @@ from generic.kodiMenu import AddonFolder, FavouritesFolder, ShutdownAction, Rebo
 class _Player(object):
 
     def __init__(self, kodi):
-        _kodi = kodi
+        self._kodi = kodi
 
     def item(self):
-        return kodi.getCurrentItem()
+        item = self._kodi.getCurrentItem()
+        if item is None:
+            item = "None"
+        return item
 
 
 def create(kodi, controllerListener):

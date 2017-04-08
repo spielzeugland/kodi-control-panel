@@ -7,7 +7,7 @@ import subprocess
 def ensure_gpiogroup():
     try:
         grp.getgrnam('gpio')
-	print('GPIO group already exists')
+	    print('GPIO group already exists')
     except KeyError:
         print('GPIO group does not exist - creating...')
         subprocess.call(['groupadd', '-f', '-r', 'gpio'])
@@ -26,4 +26,3 @@ SUBSYSTEM=="gpio", KERNEL=="gpio*", ACTION=="add", PROGRAM="/bin/sh -c 'chown ro
 
 if __name__ == '__main__':
     ensure_gpiogroup()
-

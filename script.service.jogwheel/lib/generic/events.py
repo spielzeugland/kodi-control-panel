@@ -14,11 +14,8 @@ def createQueue():
     return q
 
 
-class Event(object):
-
-    def __init__(self, name, data=None):
-        self.name = name
-        self.data = data
+def asEvent(name, data=None):
+    return {"name": name, "data": data}
 
 
 class _Worker(threading.Thread):
@@ -43,7 +40,7 @@ class _Worker(threading.Thread):
                 if shouldContinue is False:
                     return
             except Exception as e:
-                text = "Error handling event \"{0}\"".format(event.eventName)
+                text = "Error handling event \"{0}\"".format(event["name"])
                 messages.add(text, None, sys.exc_info())
             with self._lock:
                 if not self._running:

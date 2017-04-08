@@ -1,7 +1,7 @@
 import RPi.GPIO as GPIO
 
 from rotary_encoder import RotaryEncoder
-from button_listener import ButtonListener
+from button_listener import ShutdownListener
 
 
 class Inputs(object):

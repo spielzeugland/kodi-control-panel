@@ -1,6 +1,7 @@
 import log
+import json
 from time import sleep
-from proxy import Proxy
+from proxy import Proxy, TransportError, ProtocolError
 
 
 class Kodi:
@@ -77,7 +78,7 @@ class _Local(Proxy):
 
         request_body = self.serialize(method_name, params, is_notification)
         try:
-            response = self._xbmc.executeJSONRPC(request)
+            response = self._xbmc.executeJSONRPC(request_body)
         except Exception as requests_exception:
             raise TransportError('Error calling method %r' % method_name, requests_exception)
 

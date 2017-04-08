@@ -1,6 +1,6 @@
 import RPi.GPIO as GPIO
-from RPLCD import CharLCD
-from simpleDisplay import Size20x4
+import RPLCD as LCD
+from generic.simpleDisplay import Size20x4
 
 
 class Display(Size20x4):
@@ -12,7 +12,7 @@ class Display(Size20x4):
     def _configure(self):
         # TODO make configurable
         GPIO.setmode(GPIO.BOARD)
-        self._lcd = CharLCD(pin_backlight=40, backlight_mode=LCD.BacklightMode.active_high)
+        self._lcd = LCD.CharLCD(pin_backlight=40, backlight_mode=LCD.BacklightMode.active_high)
 
     def _write(self, lines):
         string = ""

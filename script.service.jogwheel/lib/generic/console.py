@@ -2,7 +2,7 @@ import time
 import sys
 import traceback
 from threading import Thread
-from events import Event
+from events import asEvent
 import messages
 
 
@@ -41,7 +41,7 @@ class Input(object):
                 self._printHelp()
 
     def _queueEvent(self, event, data=None):
-        self._queue.put_nowait(Event(event, data))
+        self._queue.put_nowait(asEvent(event, data))
 
     def shutdown(self):
         return self._shouldStop

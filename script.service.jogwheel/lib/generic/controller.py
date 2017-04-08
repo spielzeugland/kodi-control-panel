@@ -92,9 +92,9 @@ class Controller(object):
             self._listener(self)
 
     def handle(self, event):
-        name = event.name
+        name = event["name"]
         if name is "moveBy":
-            self.moveBy(event.data)
+            self.moveBy(event["data"])
             return True
         elif name is "click":
             self.select()
@@ -103,4 +103,5 @@ class Controller(object):
             self.back()
             return True
         elif name is "veryLongClick":
+            # TODO find better way to signal shutdown which also works with Kodi Monitors
             return False
