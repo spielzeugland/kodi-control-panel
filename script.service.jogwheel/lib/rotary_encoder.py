@@ -136,7 +136,8 @@ class RotaryEncoder:
                     delta = self._encoder.get_cycles()
                 else:
                     delta = self._encoder.get_delta()
-                self._queue.put_nowait({"name": "moveBy", "data": delta})
+                if delta is not 0:
+                    self._queue.put_nowait({"name": "moveBy", "data": delta})
                 time.sleep(self._delay)
 
         def stop(self):
