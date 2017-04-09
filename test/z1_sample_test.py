@@ -1,7 +1,7 @@
 import context_samples
-import _menus
-import kodiSampleOffline
-import kodiSampleRemote
+import _configuredMenu
+import offlineSample
+import remoteSample
 
 
 def test_importsAreCheckingSyntax():
