@@ -19,7 +19,8 @@ class Kodi:
 
     def getFavourites(self):
         properties = ["window", "path", "windowparameter"]
-        response = self._proxy.Favourites.GetFavourites(type="media", properties=properties)
+        # response = self._proxy.Favourites.GetFavourites(type="media", properties=properties)
+        response = self._proxy.Favourites.GetFavourites(properties=properties)
         return _noneAsEmptyList(response["favourites"])
 
     def getAddonDetails(self, addonId):

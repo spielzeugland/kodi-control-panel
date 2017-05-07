@@ -24,6 +24,7 @@ class UrlFolder(DynamicFolder):
         items = []
         files = self._kodi.getFiles(self._url)
         for file in files:
+            print(file)
             name = file["label"]
             url = file["file"]
             filetype = file["filetype"]
@@ -67,10 +68,19 @@ class FavouritesFolder(DynamicFolder):
         items = []
         favs = self._kodi.getFavourites()
         for fav in favs:
+            print (fav)
             name = fav["title"]
-            url = fav["path"]
-            folder = UrlFile(self._kodi, name, url)
-            items.append(folder)
+            if fav["type"] == "media":
+                url = fav["path"]
+                folder = UrlFile(self._kodi, name, url)
+                items.append(folder)
+            elif fav["type"] == "window":
+                url = fav["windowparameter"]
+                folder = UrlFolder(self._kodi, name, url)
+                items.append(folder)
+            else:
+                # ignoring script&unknown for now
+                continue
         return items
 
 
