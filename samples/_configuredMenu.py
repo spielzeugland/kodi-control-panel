@@ -10,7 +10,7 @@ import messages
 class _OfflinePlayer(object):
 
     def item(self):
-        return "<Offline Player>"
+        return {"title": "<Offline Player>"}
 
 
 class _Action(menu.Action):
@@ -46,12 +46,13 @@ def create(kodi, controllerListener):
     webradio = _DynamicFolder("Online radio", [station1, station2, station3])
     display = menu.Folder("Display", [])
     sound = menu.Folder("Sound", [])
+    longName = menu.Folder("A Folder with very long name should still be readable somehow", [])
     settings = menu.Folder("Settings", [display, sound])
     shutdown = _Action("Now")
     reboot = _Action("Restart")
     end = menu.Folder("Shutdown", [shutdown, reboot])
 
-    mainFolder = menu.Folder("Main", [cd, favs, webradio, settings, end])
+    mainFolder = menu.Folder("Main", [cd, favs, webradio, settings, longName, end])
 
     theMenu = menu.Menu(mainFolder, menu.BackItem())
     theController = controller.Controller(_OfflinePlayer(), theMenu, controllerListener)

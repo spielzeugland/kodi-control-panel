@@ -12,14 +12,19 @@ class Mode(object):
 class _ModeTimer(object):
 
     @createLock
-    def __init__(self, timeout=5):
+    def __init__(self, controller, timeout=5):
         self._mainMode = True
         self._timer = None
         self._timeout = timeout
+        self._controller = controller
 
     @withLock
     def isMainMode(self):
         return self._mainMode
+
+    def _handleTimeout(self):
+        self._backToMainMode()
+        self._controller._notifyListener()
 
     @withLock
     def _backToMainMode(self):
@@ -29,17 +34,20 @@ class _ModeTimer(object):
     def update(self):
         if self._mainMode is True:
             self._mainMode = False
-            self._timer = Timer(self._timeout, self._backToMainMode)
-            self._timer.setDaemon(True)
-            self._timer.start()
+            self._timer = self._createAndStartTimer()
             return False
         else:
             if self._timer is not None:
                 self._timer.cancel()
-                self._timer = Timer(self._timeout, self._backToMainMode)
-                self._timer.setDaemon(True)
-                self._timer.start()
+                self._timer = self._createAndStartTimer()
             return True
+
+    @withLock
+    def _createAndStartTimer(self):
+        timer = Timer(self._timeout, self._handleTimeout)
+        timer.setDaemon(True)
+        timer.start()
+        return timer
 
     @withLock
     def cancel(self):
@@ -51,10 +59,10 @@ class _ModeTimer(object):
 
 class Controller(object):
 
-    def __init__(self, player, menu, listener=None, timer=_ModeTimer()):
+    def __init__(self, player, menu, listener=None):
         self.player = player
         self.menu = menu
-        self._timer = timer
+        self._timer = _ModeTimer(self)
         self._listener = listener
         # TODO temporary approach for initial update of display
         self._notifyListener()

@@ -46,10 +46,9 @@ View coverage report run ``coverage html`` and open `index.html` from `coverage`
 
 What is missing?
 -----------
+- Display progress when opening  a file or folder
+- Display notifications
 - Configuration of PINs etc.
-- Error handling
-- Logging
-- Displaying messages
-- Kodi Plugin wrapper
+- Error handling, more usefull logging, etc
 - Multilanguage support
 - ...

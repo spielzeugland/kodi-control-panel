@@ -52,7 +52,7 @@ class Kodi(object):
         self.shutdownCnt = 0
         self.rebootCnt = 0
 
-    def getAddons(self):
+    def getAddons(self, contentType="audio"):
         asJson = "{{\"addons\" : [{0}]}}".format(self._allAddons)
         return json.loads(asJson)["addons"]
 

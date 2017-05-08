@@ -13,8 +13,8 @@ class Kodi:
         else:
             self._monitor = _SimpleMonitor()
 
-    def getAddons(self):
-        response = self._proxy.Addons.GetAddons(content="audio")
+    def getAddons(self, contentType="audio"):
+        response = self._proxy.Addons.GetAddons(content=contentType)
         return _noneAsEmptyList(response["addons"])
 
     def getFavourites(self):

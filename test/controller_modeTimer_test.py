@@ -1,37 +1,40 @@
 import time
 import context
-from controller import _ModeTimer as ModeTimer
+from controller import Controller, _ModeTimer as ModeTimer
+
+
+someController = Controller(None, None)
 
 
 def test_construtorWithOptionalTimeout():
-    c = ModeTimer()
+    c = ModeTimer(someController)
     assert c._timeout == 5
 
 
 def test_initial_shouldBeMainMode():
-    c = ModeTimer(1)
+    c = ModeTimer(someController, 1)
     assert c.isMainMode() is True
 
 
 def test_mainMode_updateShouldEnableMenuMode():
-    c = ModeTimer(1)
+    c = ModeTimer(someController, 1)
     c.update()
     assert c.isMainMode() is False
 
 
 def test_mainMode_updateShouldReturnFalse():
-    c = ModeTimer(1)
+    c = ModeTimer(someController, 1)
     assert c.update() is False
 
 
 def test_menuMode_updateShouldReturnTrue():
-    c = ModeTimer(1)
+    c = ModeTimer(someController, 1)
     c.update()
     assert c.update() is True
 
 
 def test_menuMode_shouldBeExitedAfterTimeout():
-    c = ModeTimer(0.2)
+    c = ModeTimer(someController, 0.2)
     c.update()
     assert c.isMainMode() is False
     time.sleep(0.5)
@@ -39,7 +42,7 @@ def test_menuMode_shouldBeExitedAfterTimeout():
 
 
 def test_menuMode_updateShouldBeExtendMenuMode():
-    c = ModeTimer(0.5)
+    c = ModeTimer(someController, 0.5)
     c.update()
     assert c.isMainMode() is False
     time.sleep(0.3)
@@ -54,13 +57,13 @@ def test_menuMode_updateShouldBeExtendMenuMode():
 
 
 def test_menuMode_cancelShouldExitMenuMode():
-    c = ModeTimer(1)
+    c = ModeTimer(someController, 1)
     c.update()
     c.cancel()
     assert c. isMainMode() is True
 
 
 def test_menuMode_cancelInMainModeShouldDoNothing():
-    c = ModeTimer(1)
+    c = ModeTimer(someController, 1)
     c.cancel()
     assert c. isMainMode() is True

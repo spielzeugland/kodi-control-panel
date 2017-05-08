@@ -11,14 +11,16 @@ class _Player(object):
     def item(self):
         item = self._kodi.getCurrentItem()
         if item is None:
-            item = "None"
+            item = {}
         return item
 
 
 def create(kodi, controllerListener):
     shutdownFolder = Folder("Shutdown", [ShutdownAction(kodi, "Now"), RebootAction(kodi)])
     # TODO make configurable
-    rootFolder = Folder("root", [AddonFolder(kodi), FavouritesFolder(kodi), shutdownFolder])
+    audioAddons = AddonFolder(kodi, "Music")
+    videoAddons = AddonFolder(kodi, "Video", contentType="video")
+    rootFolder = Folder("root", [FavouritesFolder(kodi), audioAddons, videoAddons, shutdownFolder])
 
     menu = Menu(rootFolder, BackItem())
     controller = Controller(_Player(kodi), menu, controllerListener)

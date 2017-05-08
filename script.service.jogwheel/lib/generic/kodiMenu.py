@@ -41,13 +41,14 @@ class UrlFolder(DynamicFolder):
 
 class AddonFolder(DynamicFolder):
 
-    def __init__(self, kodi, name="Addons"):
+    def __init__(self, kodi, name="Addons", contentType="audio"):
         super(AddonFolder, self).__init__(name)
         self._kodi = kodi
+        self._contentType = contentType
 
     def _loadItems(self):
         items = []
-        addons = self._kodi.getAddons()
+        addons = self._kodi.getAddons(self._contentType)  # TODO add tests for contentType usage
         for addon in addons:
             addonId = addon["addonid"]
             details = self._kodi.getAddonDetails(addonId)
@@ -68,7 +69,6 @@ class FavouritesFolder(DynamicFolder):
         items = []
         favs = self._kodi.getFavourites()
         for fav in favs:
-            print (fav)
             name = fav["title"]
             if fav["type"] == "media":
                 url = fav["path"]
