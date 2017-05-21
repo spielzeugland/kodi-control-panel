@@ -65,6 +65,14 @@ def test_shouldAddTwoTrailingBlankLines():
     assert lines[3] == "                    "
 
 
+def test_shouldRoundUpRequiredLineCount():
+    lines = s._asLines("tagesschau vom 20.5.2017", 20, 3)
+    assert len(lines) == 3
+    assert lines[0] == " tagesschau vom 20. "
+    assert lines[1] == " 5.2017            "
+    assert lines[2] == "                    "
+
+
 def test_shouldNotFailIfNoSpaceLeft():
     lines = s._asLines("abcdefghijklmnopqrstuvwxyz", 3, 2, 4)
     assert len(lines) == 2

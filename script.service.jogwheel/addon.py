@@ -21,7 +21,11 @@ if __name__ == "__main__":
         monitor = localKodi.getMonitor()
         while not monitor.abortRequested():
             if monitor.waitForAbort(10):
+                display.writeMessage("Good Bye!")
                 break
+            if not queue.worker.is_alive():
+                localKodi.shutdown()
+
 
         # TODO exception handling
         # except Exception as e:

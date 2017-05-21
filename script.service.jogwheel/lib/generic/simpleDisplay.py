@@ -1,3 +1,4 @@
+import math
 import string
 import traceback
 import messages
@@ -106,7 +107,7 @@ def _asLines(text, columns, rows, border=1):
                 text = text[0:maxLength]
         lines = []
         visibleColumns = columns - (2 * border)
-        lineCnt = int(round(float(len(text)) / float(visibleColumns)))
+        lineCnt = int(math.ceil(float(len(text)) / float(visibleColumns)))
         lineCnt = max(lineCnt, 1)
         hasLeadingLine = False
         borderSpaces = border * " "
