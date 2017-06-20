@@ -1,4 +1,5 @@
 import _context
+import _logConfig
 import console
 import _configuredMenu as configuredMenu
 import menu
@@ -6,21 +7,14 @@ import worker
 import controller
 from kodi import Kodi
 import simpleDisplay
-import time
 
 
 _debug = True
 
 
-def _print(msg):
-    if _debug:
-        t = time.asctime()
-        print(("{0} >> {1}").format(t, msg))
-
-
 if __name__ == "__main__":
 
-    _print("sample starting")
+    _logConfig.configure(_debug)
 
     kodi = Kodi(None, None)
 
@@ -32,5 +26,3 @@ if __name__ == "__main__":
 
     theController = configuredMenu.create(kodi, display.update)
     theController.work(queue).join()
-
-    _print("sample stopped")

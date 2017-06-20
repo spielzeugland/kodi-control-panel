@@ -46,7 +46,8 @@ View coverage report run ``coverage html`` and open `index.html` from `coverage`
 
 What is missing?
 -----------
-- Display progress when opening  a file or folder
+- Update display when track changes
+- Display progress when opening a file or folder
 - Display notifications
 - Configuration of PINs etc.
 - Error handling, more usefull logging, etc

@@ -1,7 +1,8 @@
-import log
 import json
+import logging
 from time import sleep
 from proxy import Proxy, TransportError, ProtocolError
+import configuredLogging
 
 
 class Kodi:
@@ -63,8 +64,6 @@ def _noneAsEmptyList(entries):
 
 def local(xbmc):
     instance = Kodi(_Local(xbmc), xbmc)
-    # TODO pass AddOn or it's id as argument
-    log.set(Log("script.service.jogwheel", xbmc))
     return instance
 
 
@@ -83,31 +82,35 @@ class _Local(Proxy):
         except Exception as requests_exception:
             raise TransportError('Error calling method %r' % method_name, requests_exception)
 
-        parsed = json.loads(response)
-        return self.parse_result(parsed)
+        responseJson = json.loads(response)
+        return self.parse_result(responseJson)
 
 
-class Log(object):
+class KodiLogHandler(logging.Handler):
 
-    def __init__(self, name, xbmc):
-        self._name = name
+    def __init__(self, xbmc):
         self._xbmc = xbmc
+        msgFormat = '%(name)s:%(lineno)d: %(message)s'
+        formatter = logging.Formatter(format=msgformat)
+        self.setFormatter(formatter)
 
-    def error(self, msg, *args):
-        self._log(self._xbmc.LOGERROR, msg, *args)
+    def emit(self, record):
+        msg = self.format(record)
+        level = self._convert(record.level)
+        self._xbmc.log(msg, level=logLevel)
 
-    def warning(self, msg, *args):
-        self._log(self._xbmc.LOGWARNING, msg, *args)
-
-    def info(self, msg, *args):
-        self._log(self._xbmc.LOGNOTICE, msg, *args)
-
-    def debug(self, msg, *args):
-        self._log(self._xbmc.LOGDEBUG, msg, *args)
-
-    def _log(self, logLevel, msg, *args):
-        parameters = [self._name, msg] + args
-        self._xbmc.log("### [%s] - %s" .format(parameters), level=logLevel)  # TODO add all arguments
+    def _convertLevel(self, level):
+        if level >= logging.CRITICAL:
+            return _xbmc.LOGFATAL
+        elif level >= logging.ERROR:
+            return _xbmc.LOGERROR
+        elif level >= logging.WARNING:
+            return _xbmc.LOGWARNING
+        elif level >= logging.INFO:
+            # LOGINFO is considered to be more technical
+            return _xbmc.LOGNOTICE
+        elif level >= logging.DEBUG:
+            return _xbmc.LOGDEBUG
 
 
 class _SimpleMonitor(object):

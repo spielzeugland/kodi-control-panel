@@ -1,5 +1,7 @@
 import xbmc
 import lib.generic.worker as worker
+import lib.generic.configuredLogging as configuredLogging
+import lib.generic.events as events
 import lib.generic.kodi as kodi
 import lib.configuredMenu as configuredMenu
 from lib.display import Display
@@ -7,7 +9,10 @@ from lib.inputs import Inputs
 
 
 if __name__ == "__main__":
+
     try:
+        configuredLogging.configure(configuredLogging.WARNING, kodi.KodiLogHandler(xbmc))
+
         localKodi = kodi.local(xbmc)
 
         queue = worker.createQueue()
@@ -25,7 +30,6 @@ if __name__ == "__main__":
                 break
             if not queue.worker.is_alive():
                 localKodi.shutdown()
-
 
         # TODO exception handling
         # except Exception as e:

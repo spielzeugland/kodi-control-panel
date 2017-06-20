@@ -69,7 +69,7 @@ def test_shouldRoundUpRequiredLineCount():
     lines = s._asLines("tagesschau vom 20.5.2017", 20, 3)
     assert len(lines) == 3
     assert lines[0] == " tagesschau vom 20. "
-    assert lines[1] == " 5.2017            "
+    assert lines[1] == " 5.2017             "
     assert lines[2] == "                    "
 
 
