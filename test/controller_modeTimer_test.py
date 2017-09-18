@@ -1,9 +1,10 @@
 import time
 import context
+import mocks
 from controller import Controller, _ModeTimer as ModeTimer
 
 
-someController = Controller(None, None)
+someController = Controller(None, mocks.Menu())
 
 
 def test_construtorWithOptionalTimeout():

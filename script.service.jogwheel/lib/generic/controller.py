@@ -62,6 +62,7 @@ class Controller(object):
     def __init__(self, player, menu, listener=None):
         self.player = player
         self.menu = menu
+        self.menu.addListener(self)
         self._timer = _ModeTimer(self)
         self._listener = listener
         # TODO temporary approach for initial update of display
@@ -113,3 +114,8 @@ class Controller(object):
         elif name is "veryLongClick":
             # TODO find better way to signal shutdown which also works with Kodi Monitors
             return False
+
+    def asyncMenuUpdate(self, menu):
+        if self._timer.isMainMode() is False:
+            self._timer.update()
+            self._notifyListener()

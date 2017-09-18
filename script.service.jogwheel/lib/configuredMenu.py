@@ -1,4 +1,4 @@
-from generic.menu import Menu, Folder, BackItem
+from generic.menu import Menu, Folder
 from generic.controller import Controller, Mode
 from generic.kodiMenu import AddonFolder, FavouritesFolder, ShutdownAction, RebootAction
 
@@ -22,7 +22,7 @@ def create(kodi, controllerListener):
     videoAddons = AddonFolder(kodi, "Video", contentType="video")
     rootFolder = Folder("root", [FavouritesFolder(kodi), audioAddons, videoAddons, shutdownFolder])
 
-    menu = Menu(rootFolder, BackItem())
+    menu = Menu(rootFolder)
     controller = Controller(_Player(kodi), menu, controllerListener)
 
     return controller

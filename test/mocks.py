@@ -11,7 +11,7 @@ class ControllerListener(object):
         self.updateCount = 0
 
     def update(self, controller):
-        self.updateCount = self.updateCount + 1
+        self.updateCount += 1
 
     def reset(self):
         self.updateCount = 0
@@ -123,6 +123,18 @@ class Menu(object):
 
     def isRoot(self):
         return self._isRoot
+
+    def addListener(self, listener):
+        pass
+
+
+class CountingMenuListener(object):
+
+    def __init__(self):
+        self.count = 0
+
+    def asyncMenuUpdate(self, menu):
+        self.count += 1
 
 
 class Player(object):

@@ -16,10 +16,10 @@ class Action(object):
         pass
 
 
-class BackItem(Action):
+class _BackItem(Action):
 
     def __init__(self, name=".."):
-        super(BackItem, self).__init__(name)
+        super(_BackItem, self).__init__(name)
 
     def run(self, menu):
         menu.back()
@@ -122,10 +122,14 @@ _LOADING_ITEM_INSTANCE = _LoadingItem()
 
 class Menu(object):
 
-    def __init__(self, root, backItem=None):
+    def __init__(self, root, showBackItem=True):
         self._root = root
+        self._listeners = []
         self._menuStack = []
-        self._backItem = backItem
+        if showBackItem:
+            self._backItem = _BackItem()
+        else:
+            self._backItem = None
         self._emptyItem = _EmptyItem()
         self._loadingItem = _LOADING_ITEM_INSTANCE
         self._menuStackLock = RLock()
@@ -147,18 +151,18 @@ class Menu(object):
         try:
             newItems = folder.items()
         except Exception as e:
-            text = "Folder \"{0}\" could not be loaded".format(folder.name())
+            text = "Opening Folder \"{0}\" failed".format(folder.name())
             messages.add(text, None, sys.exc_info())
         if newItems is not None:
             with self._folderLock:
                 self._setCurrentFolderAndStoreMainFolder(folder)
-                self._updateItemsForFolder(folder, newItems, index)
+                self._updateItemsForFolder(folder, newItems, index, False)
 
     def _setCurrentFolderAsynchron(self, folder, index):
         with self._folderLock:
             self._setCurrentFolderAndStoreMainFolder(folder)
-            self._updateItemsForFolder(folder, [self._loadingItem])
-        folder.items(lambda newItems: self._updateItemsForFolder(folder, newItems, index))
+            self._updateItemsForFolder(folder, [self._loadingItem], 0, False)
+        folder.items(lambda newItems: self._updateItemsForFolder(folder, newItems, index, True))
 
     def _setCurrentFolderAndStoreMainFolder(self, folder):
         with self._folderLock:
@@ -169,7 +173,7 @@ class Menu(object):
                 if self.isRoot():
                     self._mainFolder = None
 
-    def _updateItemsForFolder(self, folder, items=[], index=0):
+    def _updateItemsForFolder(self, folder, items, index, notify):
         if isinstance(items, list):
             with self._folderLock:
                 if self._currentFolder is not folder:
@@ -179,8 +183,10 @@ class Menu(object):
                     self._currentIndex = len(self._currentItems) - 1
                 else:
                     self._currentIndex = index
+            if notify:
+                self._fireAsyncCallback()
         else:
-            text = "Folder \"{0}\" could not be loaded".format(folder.name())
+            text = "Opening Folder \"{0}\" failed".format(folder.name())
             details = "Returned items object should be of type list"  # TODO but was \"{0}\"".format(itemType)
             messages.add(text, details)
 
@@ -191,7 +197,7 @@ class Menu(object):
                 length += 1
             if length > 0:
                 self._currentIndex = (self._currentIndex + offset) % length
-            return self
+        return self
 
     def select(self):
         with self._folderLock:
@@ -240,7 +246,7 @@ class Menu(object):
     def item(self):
         with self._folderLock:
             length = len(self._currentItems)
-            if self._currentIndex == length and self._backItem is not None:
+            if self._currentIndex >= length and self._backItem is not None:
                 return self._backItem
             elif length > 0:
                 return self._currentItems[self._currentIndex]
@@ -253,3 +259,10 @@ class Menu(object):
     def mainFolder(self):
         with self._folderLock:
             return self._mainFolder
+
+    def addListener(self, listener):  # not thread-safe yet
+        self._listeners.append(listener)
+
+    def _fireAsyncCallback(self):
+        for listener in self._listeners:
+            listener.asyncMenuUpdate(self)

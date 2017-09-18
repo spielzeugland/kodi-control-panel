@@ -1,10 +1,9 @@
 import context
 import mocks
 import messages
-from menu import Menu, Action, Folder, BackItem
+from menu import Menu, Action, Folder, _BackItem
 
 
-backItem = mocks.Action("<Back>")
 folder1a = mocks.Folder("F1a", [])
 folder1b = mocks.Folder("F1b", [])
 folder1 = mocks.Folder("F1", [folder1a, folder1b])
@@ -27,31 +26,31 @@ def test_init():
 
 
 def test_moveBy0_shouldDoNothing():
-    menu = Menu(mainFolder)
+    menu = Menu(mainFolder, showBackItem=False)
     menu.moveBy(0)
     assert menu.item() is folder1
 
 
 def test_moveBy1():
-    menu = Menu(mainFolder)
+    menu = Menu(mainFolder, showBackItem=False)
     menu.moveBy(1)
     assert menu.item() is folder2
 
 
-def test_moveBy3():
-    menu = Menu(mainFolder)
-    menu.moveBy(3)
-    assert menu.item() is folder1
+def test_moveBy2():
+    menu = Menu(mainFolder, showBackItem=False)
+    menu.moveBy(2)
+    assert menu.item() is folder3
 
 
-def test_moveBy4():
-    menu = Menu(mainFolder)
+def test_moveBy_overflow_withoutBackItem():
+    menu = Menu(mainFolder, showBackItem=False)
     menu.moveBy(4)
     assert menu.item() is folder2
 
 
-def test_moveByMinus1():
-    menu = Menu(mainFolder)
+def test_moveByMinus1_withoutBackItem():
+    menu = Menu(mainFolder, showBackItem=False)
     menu.moveBy(-1)
     assert menu.item() is folder3
 
@@ -63,76 +62,76 @@ def test_moveDoesNotChangeTheFolder():
     assert menu.isRoot() is True
 
 
-def test_moveBy0_withBackItem_shouldDoNothing():
-    menu = Menu(mainFolder, backItem)
+def test_moveBy0_shouldDoNothing():
+    menu = Menu(mainFolder)
     menu.moveBy(0)
     assert menu.item() is folder1
 
 
 def test_moveBy1_withBackItem():
-    menu = Menu(mainFolder, backItem)
+    menu = Menu(mainFolder)
     menu.moveBy(1)
     assert menu.item() is folder2
 
 
 def test_moveBy3_withBackItem():
-    menu = Menu(mainFolder, backItem)
+    menu = Menu(mainFolder)
     menu.moveBy(3)
-    assert menu.item() is backItem
+    assert menu.item() is menu._backItem
 
 
-def test_moveBy4_withBackItem():
-    menu = Menu(mainFolder, backItem)
+def test_moveBy_overflow_withBackItem():
+    menu = Menu(mainFolder)
     menu.moveBy(4)
     assert menu.item() is folder1
 
 
 def test_moveByMinus1_withBackItem():
-    menu = Menu(mainFolder, backItem)
+    menu = Menu(mainFolder)
     menu.moveBy(-1)
-    assert menu.item() is backItem
+    assert menu.item() is menu._backItem
 
 
 def test_moveByMinus2_withBackItem():
-    menu = Menu(mainFolder, backItem)
+    menu = Menu(mainFolder)
     menu.moveBy(-2)
     assert menu.item() is folder3
 
 
 def test_moveBy1_shouldNotFailForEmptyFolder():
-    menu = Menu(emptyFolder)
+    menu = Menu(emptyFolder, showBackItem=False)
     menu.moveBy(1)
     assert menu.item() is menu._emptyItem
 
 
 def test_moveBy0_shouldNotFailForEmptyFolder():
-    menu = Menu(emptyFolder)
+    menu = Menu(emptyFolder, showBackItem=False)
     menu.moveBy(0)
     assert menu.item() is menu._emptyItem
 
 
 def test_moveByMinus1_shouldNotFailForEmptyFolder():
-    menu = Menu(emptyFolder)
+    menu = Menu(emptyFolder, showBackItem=False)
     menu.moveBy(-1)
     assert menu.item() is menu._emptyItem
 
 
 def test_moveBy1_withBackItem_shouldNotFailForEmptyFolder():
-    menu = Menu(emptyFolder, backItem)
+    menu = Menu(emptyFolder)
     menu.moveBy(1)
-    assert menu.item() is backItem
+    assert menu.item() is menu._backItem
 
 
 def test_moveBy0_withBackItem_shouldNotFailForEmptyFolder():
-    menu = Menu(emptyFolder, backItem)
+    menu = Menu(emptyFolder)
     menu.moveBy(0)
-    assert menu.item() is backItem
+    assert menu.item() is menu._backItem
 
 
 def test_moveByMinus1_withBackItem_shouldNotFailForEmptyFolder():
-    menu = Menu(emptyFolder, backItem)
+    menu = Menu(emptyFolder)
     menu.moveBy(-1)
-    assert menu.item() is backItem
+    assert menu.item() is menu._backItem
 
 
 def test_select_shouldExecuteSelectedAction():
@@ -168,7 +167,7 @@ def test_select_shouldAddMessageForFailingFolder():
     menu.select()
     newMessages = messages.getUnread()
     assert len(newMessages) is 1
-    assert newMessages[0].text == "Folder \"my failing folder\" could not be loaded"
+    assert newMessages[0].text == "Opening Folder \"my failing folder\" failed"
     assert newMessages[0].details is None
     assert newMessages[0].sysInfo[1] is someException
 
@@ -182,7 +181,7 @@ def test_select_shouldAddMessageForFolderReturningInvalidItems():
     menu.select()
     newMessages = messages.getUnread()
     assert len(newMessages) is 1
-    assert newMessages[0].text == "Folder \"my incorrect folder\" could not be loaded"
+    assert newMessages[0].text == "Opening Folder \"my incorrect folder\" failed"
     assert newMessages[0].details == "Returned items object should be of type list"
 
 
@@ -212,22 +211,16 @@ def test_select_multiLevel():
     assert menu.folder() is folder2b
 
 
-def test_select_shouldExecuteBackItemIfSelected():
-    menu = Menu(mainFolder, backItem)
-    menu.moveBy(-1).select()
-    assert backItem.runCnt == 1
-
-
 def test_select_emptyFolder_shouldDoNothing():
-    menu = Menu(emptyFolder)
+    menu = Menu(emptyFolder, showBackItem=False)
     assert menu.item() is menu._emptyItem
     menu.select()
     assert menu.item() is menu._emptyItem
 
 
 def test_withBackItem_shouldShowBackItemInEmptyFolder():
-    menu = Menu(emptyFolder, backItem)
-    assert menu.item() is backItem
+    menu = Menu(emptyFolder)
+    assert menu.item() is menu._backItem
 
 
 def test_back():
@@ -237,7 +230,7 @@ def test_back():
     assert menu.folder() is mainFolder
 
 
-def test_back_shouldRemeberIndex():
+def test_back_shouldRememberIndex():
     menu = Menu(mainFolder)
     menu.moveBy(1)
     menu.select()
@@ -251,6 +244,14 @@ def test_back_shouldDoNothingForRootFolder():
     assert menu.folder() is mainFolder
 
 
+def test_back_doesNotNotifyListenersIfFolderNotChanged():
+    countingListener = mocks.CountingMenuListener()
+    menu = Menu(mainFolder)
+    menu.addListener(countingListener)
+    menu.back()
+    assert countingListener.count == 0
+
+
 def test_back_multiLevel():
     menu = Menu(mainFolder)
     menu.moveBy(1).select().moveBy(1).select()
@@ -262,14 +263,24 @@ def test_back_multiLevel():
     assert menu.item() is folder2
 
 
-def test_back_shouldGoToLastElementIfParentItemListWasShortended():
+def test_back_shouldGoToLastElementIfParentItemListWasShortended_withoutBackItem():
+    subFolders = [Folder("a", []), Folder("b", []), Folder("c", [])]
+    folder = Folder("", subFolders)
+    menu = Menu(folder, showBackItem=False)
+    menu.moveBy(-1).select()
+    subFolders.pop()
+    menu.back()
+    assert menu.item() is subFolders[1]
+
+
+def test_back_shouldGoToLastElementIfParentItemListWasShortended_withBackItem():
     subFolders = [Folder("a", []), Folder("b", []), Folder("c", [])]
     folder = Folder("", subFolders)
     menu = Menu(folder)
     menu.moveBy(-1).select()
     subFolders.pop()
     menu.back()
-    assert menu.item() == subFolders[1]
+    assert menu.item() is menu._backItem
 
 
 def test_reset_shouldGoToFirstItemOfMainFolder():
@@ -301,9 +312,25 @@ def test_select_shouldShowLoadingWhileGettingItemsAsynchronously():
 
 def test_updateItemsForFolder_shouldDoNothingForDifferentFolder():
     menu = Menu(mainFolder)
-    menu._updateItemsForFolder(folder2, folder2.items())
+    menu._updateItemsForFolder(folder2, folder2.items(), 0, False)
     assert menu.folder() is mainFolder
     assert menu.item() is folder1
+
+
+def test_updateItemsForFolder_shouldCallHandler():
+    countingListener = mocks.CountingMenuListener()
+    menu = Menu(mainFolder)
+    menu.addListener(countingListener)
+    menu._updateItemsForFolder(mainFolder, mainFolder.items(), 0, True)
+    assert countingListener.count == 1
+
+
+def test_updateItemsForFolder_shouldNotCallHandler():
+    countingListener = mocks.CountingMenuListener()
+    menu = Menu(mainFolder)
+    menu.addListener(countingListener)
+    menu._updateItemsForFolder(mainFolder, mainFolder.items(), 0, False)
+    assert countingListener.count == 0
 
 
 def test_mainFolder_shouldReturnNoneInRootFolder():
@@ -350,17 +377,17 @@ def test_Folder_init_shouldUseDefaultItems():
 
 def test_BackItem_run_shouldCallBackOnMenu():
     menu = mocks.Menu()
-    BackItem().run(menu)
+    _BackItem().run(menu)
     assert menu.backCnt == 1
 
 
 def test_BackItem_shouldBeAnAction():
-    assert isinstance(BackItem(), Action)
+    assert isinstance(_BackItem(), Action)
 
 
 def test_BackItem_init_shouldTakeName():
-    assert BackItem("myName").name() == "myName"
+    assert _BackItem("myName").name() == "myName"
 
 
 def test_BackItem_init_shouldUseDefaultName():
-    assert BackItem().name() == ".."
+    assert _BackItem().name() == ".."
