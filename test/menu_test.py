@@ -62,7 +62,7 @@ def test_moveDoesNotChangeTheFolder():
     assert menu.isRoot() is True
 
 
-def test_moveBy0_shouldDoNothing():
+def test_moveBy0_withBackItem_shouldDoNothing():
     menu = Menu(mainFolder)
     menu.moveBy(0)
     assert menu.item() is folder1
