@@ -1,5 +1,5 @@
 import xbmc
-import lib.generic.events as events
+import lib.generic.worker as worker
 import lib.generic.kodi as kodi
 import lib.configuredMenu as configuredMenu
 from lib.display import Display
@@ -10,14 +10,13 @@ if __name__ == "__main__":
     try:
         localKodi = kodi.local(xbmc)
 
-        queue = events.createQueue()
+        queue = worker.createQueue()
 
         inputs = Inputs(queue)
         display = Display()
 
         theController = configuredMenu.create(localKodi, display.update)
-
-        queue.worker.start(theController.handle)
+        theController.work(queue)
 
         monitor = localKodi.getMonitor()
         while not monitor.abortRequested():

@@ -207,3 +207,21 @@ class Xbmc(object):
 
         def waitForAbort(self, timeToWait):
             pass
+
+
+class CountingMethod(object):
+
+    def __init__(self, method=None):
+        self.count = 0
+        self._method = method
+
+    def get(self):
+        def m():
+            self.count += 1
+            if self._method is not None:
+                return self._method()
+        return m
+
+
+def returnFalse():
+    return False

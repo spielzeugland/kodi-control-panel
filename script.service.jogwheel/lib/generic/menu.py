@@ -1,5 +1,6 @@
 import sys
-from threading import Thread, RLock
+from threading import RLock
+import worker
 from synchronized import createLock, withLock
 import messages
 
@@ -39,10 +40,7 @@ class AsyncAction(Action):
 
     @withLock
     def _scheduleRun(self):
-        # TODO log exceptions in case execution fails
-        self._thread = Thread(target=self._asyncRun)
-        self._thread.setDaemon(True)
-        self._thread.start()
+        self._thread = worker.run(self._asyncRun)
 
     @withLock
     def _isRunning(self):
@@ -90,9 +88,7 @@ class DynamicFolder(Folder):
         def run():
             self._items = self._loadItemsWithoutLock()
             callback(self._items)
-        thread = Thread(target=run)
-        thread.setDaemon(True)
-        thread.start()
+        worker.run(run)
 
     def _loadItemsWithoutLock(self):
         try:

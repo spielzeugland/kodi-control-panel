@@ -1,7 +1,7 @@
 from threading import Timer
 from synchronized import createLock, withLock
 import menu
-import events
+import worker
 
 
 class Mode(object):
@@ -100,20 +100,23 @@ class Controller(object):
         if self._listener is not None:
             self._listener(self)
 
-    def handle(self, event):
-        name = event["name"]
-        if name is "moveBy":
-            self.moveBy(event["data"])
-            return True
-        elif name is "click":
-            self.select()
-            return True
-        elif name is "longClick":
-            self.back()
-            return True
-        elif name is "veryLongClick":
-            # TODO find better way to signal shutdown which also works with Kodi Monitors
-            return False
+    def work(self, queue):
+        def _handle():
+            event = queue.get()
+            name = event["name"]
+            if name is "moveBy":
+                self.moveBy(event["data"])
+                return True
+            elif name is "click":
+                self.select()
+                return True
+            elif name is "longClick":
+                self.back()
+                return True
+            elif name is "veryLongClick":
+                # TODO find better way to signal shutdown which also works with Kodi Monitors
+                return False
+        return worker.runAsLoop(_handle)
 
     def asyncMenuUpdate(self, menu):
         if self._timer.isMainMode() is False:

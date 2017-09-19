@@ -1,8 +1,7 @@
 import time
 import sys
 import traceback
-from threading import Thread
-from events import asEvent
+import worker
 import messages
 
 
@@ -41,15 +40,13 @@ class Input(object):
                 self._printHelp()
 
     def _queueEvent(self, event, data=None):
-        self._queue.put_nowait(asEvent(event, data))
+        self._queue.put_nowait({"name": event, "data": data})
 
     def shutdown(self):
         return self._shouldStop
 
     def _configure(self):
-        thread = Thread(target=self._run)
-        thread.setDaemon(True)
-        thread.start()
+        worker.runAsLoop(self._run)
 
     def _printHelp(self):
                 print("Available Commands:")

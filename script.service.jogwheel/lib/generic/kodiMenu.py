@@ -1,5 +1,4 @@
 from menu import DynamicFolder, Action, AsyncAction
-from threading import Thread
 
 
 class UrlFile(AsyncAction):

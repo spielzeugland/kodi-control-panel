@@ -1,8 +1,8 @@
 import _context
 import console
-import events
 import _configuredMenu as configuredMenu
 import menu
+import worker
 import controller
 from kodi import Kodi
 import simpleDisplay
@@ -24,18 +24,13 @@ if __name__ == "__main__":
 
     kodi = Kodi(None, None)
 
-    queue = events.createQueue()
+    queue = worker.createQueue()
 
     inputs = console.Input(queue)
     display = simpleDisplay.Size20x4()
     display._debug = _debug
 
     theController = configuredMenu.create(kodi, display.update)
-
-    queue.worker.start(theController.handle)
-
-    _print("sample started")
-
-    queue.worker.join()
+    theController.work(queue).join()
 
     _print("sample stopped")
