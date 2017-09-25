@@ -1,4 +1,12 @@
 import logging
+try:
+    from logging import NullHandler  # NullHandler was introduced with 2.7
+except ImportError:
+    class NullHandler(logging.Handler):
+        def emit(self, record):
+            pass
+
+logging.getLogger(__name__).addHandler(NullHandler())
 
 # TODO find a good name
 __ROOT = "jogwheel"
