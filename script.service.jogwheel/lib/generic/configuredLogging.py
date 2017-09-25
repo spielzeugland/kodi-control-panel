@@ -6,7 +6,6 @@ except ImportError:
         def emit(self, record):
             pass
 
-logging.getLogger(__name__).addHandler(NullHandler())
 
 # TODO find a good name
 __ROOT = "jogwheel"
@@ -16,7 +15,7 @@ DATE_FORMAT = '%d.%m.%Y %H:%M:%S'
 
 
 _rootLogger = logging.getLogger(__ROOT)
-_rootLogger.addHandler(logging.NullHandler())
+_rootLogger.addHandler(NullHandler())
 
 
 def getLogger(name):
