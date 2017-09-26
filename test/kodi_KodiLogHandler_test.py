@@ -11,7 +11,7 @@ def _assertMessage(xbmc, msg, level):
 
 
 def test_constructor():
-    kodi.KodiLogHandler(None)
+    kodi.KodiLogHandler(mocks.Xbmc())
 
 
 def test_emit_info():
