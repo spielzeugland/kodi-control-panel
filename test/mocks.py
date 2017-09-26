@@ -175,7 +175,18 @@ class Proxy(proxy.Proxy):
 
 class Xbmc(object):
 
+    LOGFATAL = 5
+    LOGERROR = 4
+    LOGWARNING = 3
+    LOGNOTICE = 2
+    LOGDEBUG = 1
     abortRequested = False
+
+    def __init__(self):
+        self.messages = []
+
+    def log(self, msg, level):
+        self.messages.append({"msg": msg, "level": level})
 
     class Monitor(object):
 

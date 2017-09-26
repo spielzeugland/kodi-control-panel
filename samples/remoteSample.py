@@ -1,5 +1,6 @@
 import getpass
 import _context
+import _logConfig
 import controller
 import console
 import worker
@@ -13,6 +14,9 @@ _debug = True
 
 
 if __name__ == "__main__":
+
+    _logConfig.configure(_debug)
+
     host = "http://osmc:8080/jsonrpc"
     user = "osmc"
     pwd = getpass.getpass()

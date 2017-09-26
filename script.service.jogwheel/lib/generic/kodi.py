@@ -89,28 +89,29 @@ class _Local(Proxy):
 class KodiLogHandler(logging.Handler):
 
     def __init__(self, xbmc):
+        super(KodiLogHandler, self).__init__()
         self._xbmc = xbmc
         msgFormat = '%(name)s:%(lineno)d: %(message)s'
-        formatter = logging.Formatter(format=msgformat)
+        formatter = logging.Formatter(fmt=msgFormat)
         self.setFormatter(formatter)
 
     def emit(self, record):
         msg = self.format(record)
-        level = self._convert(record.level)
+        logLevel = self._convertLevel(record.__dict__["levelno"])
         self._xbmc.log(msg, level=logLevel)
 
     def _convertLevel(self, level):
         if level >= logging.CRITICAL:
-            return _xbmc.LOGFATAL
+            return self._xbmc.LOGFATAL
         elif level >= logging.ERROR:
-            return _xbmc.LOGERROR
+            return self._xbmc.LOGERROR
         elif level >= logging.WARNING:
-            return _xbmc.LOGWARNING
+            return self._xbmc.LOGWARNING
         elif level >= logging.INFO:
             # LOGINFO is considered to be more technical
-            return _xbmc.LOGNOTICE
-        elif level >= logging.DEBUG:
-            return _xbmc.LOGDEBUG
+            return self._xbmc.LOGNOTICE
+        else:
+            return self._xbmc.LOGDEBUG
 
 
 class _SimpleMonitor(object):
