@@ -1,3 +1,4 @@
+from threading import Lock
 import RPi.GPIO as GPIO
 import RPLCD as LCD
 from generic.simpleDisplay import Size20x4
@@ -8,6 +9,7 @@ class Display(Size20x4):
     def __init__(self):
         super(Display, self).__init__()
         self._configure()
+        self._lock = Lock()
 
     def _configure(self):
         # TODO make configurable
@@ -19,7 +21,9 @@ class Display(Size20x4):
         # TODO what is the pythonic way for this?
         for line in lines:
             string = string + line
-        self._lcd.write_string(string)
+        with self._lock:
+            self._lcd.write_string(string)
 
     def clear(self):
-        self._lcd.clear()
+        with self._lock:
+            self._lcd.clear()

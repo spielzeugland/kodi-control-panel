@@ -30,16 +30,16 @@ class Size20x4(object):
 
         if modeChanged:
             if self._currentMode is Mode.Player:
-                self.writePlayer(controller)
+                self._writePlayer(controller)
             else:
-                self.writeMenu(controller)
+                self._writeMenu(controller)
         elif itemChanged or folderChanged:
-            self.writeMenu(controller)
+            self._writeMenu(controller)
 
         if self._debug:
             _printMessages()
 
-    def writePlayer(self, controller):
+    def _writePlayer(self, controller):
         player = controller.player
         item = player.item()
         itemTitle = item.get("label")
@@ -48,7 +48,7 @@ class Size20x4(object):
         lines = _asLines(itemTitle, self._columns, self._rows)
         self._write(lines)
 
-    def writeMenu(self, controller):
+    def _writeMenu(self, controller):
         menu = controller.menu
         item = menu.item()
         folder = menu.folder()
