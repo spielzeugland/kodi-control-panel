@@ -1,6 +1,6 @@
 from generic.menu import Menu, Folder
 from generic.controller import Controller, Mode
-from generic.kodiMenu import AddonFolder, FavouritesFolder, ShutdownAction, RebootAction
+from generic.kodiMenu import ChannelGroupFolder, ChannelFolder, AddonFolder, FavouritesFolder, ShutdownAction, RebootAction
 
 
 class _Player(object):
@@ -16,11 +16,17 @@ class _Player(object):
 
 
 def create(kodi, controllerListener):
-    shutdownFolder = Folder("Shutdown", [ShutdownAction(kodi, "Now"), RebootAction(kodi)])
     # TODO make configurable
+
+    # channel structure is defined by the imported channel list
+    tv = ChannelFolder(kodi, "TV", 1)  # use "All" for a flat list
+    radio = ChannelGroupFolder(kodi, "Radio", "radio")
+
+    favs = FavouritesFolder(kodi)
     audioAddons = AddonFolder(kodi, "Music")
     videoAddons = AddonFolder(kodi, "Video", contentType="video")
-    rootFolder = Folder("root", [FavouritesFolder(kodi), audioAddons, videoAddons, shutdownFolder])
+    shutdownFolder = Folder("Shutdown", [ShutdownAction(kodi, "Now"), RebootAction(kodi)])
+    rootFolder = Folder("root", [tv, radio, favs, audioAddons, videoAddons, shutdownFolder])
 
     menu = Menu(rootFolder)
     controller = Controller(_Player(kodi), menu, controllerListener)

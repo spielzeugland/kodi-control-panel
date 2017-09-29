@@ -83,6 +83,53 @@ class FavouritesFolder(DynamicFolder):
         return items
 
 
+class ChannelGroupFolder(DynamicFolder):
+
+    def __init__(self, kodi, name, channelType):
+        super(ChannelGroupFolder, self).__init__(name)
+        self._kodi = kodi
+        self._channelType = channelType
+
+    def _loadItems(self):
+        items = []
+        groups = self._kodi.getChannelGroups(self._channelType)
+        for group in groups:
+            id = group["channelgroupid"]
+            name = group["label"]
+            folder = ChannelFolder(self._kodi, name, id)
+            items.append(folder)
+        return items
+
+
+class ChannelFolder(DynamicFolder):
+
+    def __init__(self, kodi, name, groupId):
+        super(ChannelFolder, self).__init__(name)
+        self._kodi = kodi
+        self._groupId = groupId
+
+    def _loadItems(self):
+        items = []
+        channels = self._kodi.getChannels(self._groupId)
+        for channel in channels:
+            id = channel["channelid"]
+            name = channel["label"]
+            folder = ChannelItem(self._kodi, name, id)
+            items.append(folder)
+        return items
+
+
+class ChannelItem(AsyncAction):
+
+    def __init__(self, kodi, name, id):
+        super(ChannelItem, self).__init__(name)
+        self._kodi = kodi
+        self._id = id
+
+    def _asyncRun(self):
+        self._kodi.playChannel(self._id)
+
+
 class ShutdownAction(Action):
 
     def __init__(self, kodi, text="Shutdown"):

@@ -33,8 +33,20 @@ class Kodi:
         response = self._proxy.Files.GetDirectory(properties=properties, directory=url, media="files")
         return _noneAsEmptyList(response["files"])
 
+    def getChannelGroups(self, channelType):
+        response = self._proxy.PVR.GetChannelGroups(channeltype=channelType)
+        return _noneAsEmptyList(response["channelgroups"])
+
+    def getChannels(self, groupId):
+        response = self._proxy.PVR.GetChannels(channelgroupid=groupId)
+        return _noneAsEmptyList(response["channels"])
+
     def play(self, url):
         params = {"file": url}
+        response = self._proxy.Player.Open(item=params)
+
+    def playChannel(self, id):
+        params = {"channelid": id}
         response = self._proxy.Player.Open(item=params)
 
     def getCurrentItem(self):
