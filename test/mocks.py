@@ -141,30 +141,28 @@ class Player(object):
     pass
 
 
-class Timer(object):
+class _ExtensibleTimer(object):
 
-    def __init__(self, mainMode=True):
-        self._mainMode = mainMode
-        self.isMainModeCnt = 0
+    def __init__(self, running=True):
+        self._running = running
         self.cancelCnt = 0
 
-    def update(self):
-        return not self._mainMode
+    def start(self):
+        return self._running
 
-    def isMainMode(self):
-        self.isMainModeCnt += 1
-        return self._mainMode
+    def isRunning(self):
+        return self._running
 
     def cancel(self):
         self.cancelCnt += 1
 
 
-def timerInMainMode():
-    return Timer(mainMode=True)
+def notRunningTimer():
+    return _ExtensibleTimer(running=False)
 
 
-def timerInMenuMode():
-    return Timer(mainMode=False)
+def runningTimer():
+    return _ExtensibleTimer(running=True)
 
 
 class Proxy(proxy.Proxy):

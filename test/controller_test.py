@@ -16,26 +16,24 @@ def test_constructor():
     assert c._listener is listener
 
 
-def test_modeShouldReturnMainModeDependingOnTimerMode():
-    timer = mocks.Timer(mainMode=True)
+def test_modeShouldReturnPlayerModeDependingOnTimerMode():
+    timer = mocks.notRunningTimer()
     c = Controller(player, menu, listener)
     c._timer = timer
     assert c.mode() is Mode.Player
-    assert timer.isMainModeCnt == 1
 
 
 def test_modeShouldReturnMenuModeDependingOnTimerMode():
-    timer = mocks.Timer(mainMode=False)
+    timer = mocks.runningTimer()
     c = Controller(player, menu, listener)
     c._timer = timer
     assert c.mode() is Mode.Menu
-    assert timer.isMainModeCnt == 1
 
 
 def test_playerMode_selectShouldNotDelegateToMenu():
     menu = mocks.Menu()
     c = Controller(player, menu, listener)
-    c._timer = mocks.timerInMainMode()
+    c._timer = mocks.notRunningTimer()
     c.select()
     assert menu.selectCnt == 0
 
@@ -43,7 +41,7 @@ def test_playerMode_selectShouldNotDelegateToMenu():
 def test_menuMode_selectShouldDelegateToMenu():
     menu = mocks.Menu()
     c = Controller(player, menu, listener)
-    c._timer = mocks.timerInMenuMode()
+    c._timer = mocks.runningTimer()
     c.select()
     assert menu.selectCnt == 1
 
@@ -51,7 +49,7 @@ def test_menuMode_selectShouldDelegateToMenu():
 def test_playerMode_backShouldNotDelegateToMenu():
     menu = mocks.Menu()
     c = Controller(player, menu, listener)
-    c._timer = mocks.timerInMainMode()
+    c._timer = mocks.notRunningTimer()
     c.back()
     assert menu.backCnt == 0
 
@@ -59,7 +57,7 @@ def test_playerMode_backShouldNotDelegateToMenu():
 def test_menuMode_backOnRootFolder_shouldLeaveMenuMode():
     menu = mocks.Menu(isRoot=True)
     c = Controller(player, menu, listener)
-    c._timer = mocks.timerInMenuMode()
+    c._timer = mocks.runningTimer()
     c.back()
     assert menu.backCnt == 0
 
@@ -67,7 +65,7 @@ def test_menuMode_backOnRootFolder_shouldLeaveMenuMode():
 def test_menuMode_back_shouldDelegateToMenu():
     menu = mocks.Menu(isRoot=False)
     c = Controller(player, menu, listener)
-    c._timer = mocks.timerInMenuMode()
+    c._timer = mocks.runningTimer()
     c.back()
     assert menu.backCnt == 1
 
@@ -75,13 +73,13 @@ def test_menuMode_back_shouldDelegateToMenu():
 def test_playerMode_moveByShouldNotDelegateToMenu():
     menu = mocks.Menu()
     c = Controller(player, menu, listener)
-    c._timer = mocks.timerInMainMode()
+    c._timer = mocks.notRunningTimer()
     c.moveBy(1)
     assert menu.moveByCnt == 0
 
 
 def test_menuMode_moveByShouldDelegateToMenu():
-    timer = mocks.timerInMenuMode()
+    timer = mocks.runningTimer()
     c = Controller(player, mocks.Menu(), listener)
     c._timer = timer
     c.exitMenuMode()

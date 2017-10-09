@@ -1,60 +1,11 @@
-from threading import Timer
-from synchronized import createLock, withLock
 import menu
 import worker
+from util import Timer
 
 
 class Mode(object):
     Player = 0
     Menu = 1
-
-
-class _ModeTimer(object):
-
-    @createLock
-    def __init__(self, controller, timeout=5):
-        self._mainMode = True
-        self._timer = None
-        self._timeout = timeout
-        self._controller = controller
-
-    @withLock
-    def isMainMode(self):
-        return self._mainMode
-
-    def _handleTimeout(self):
-        self._backToMainMode()
-        self._controller._notifyListener()
-
-    @withLock
-    def _backToMainMode(self):
-        self._mainMode = True
-
-    @withLock
-    def update(self):
-        if self._mainMode is True:
-            self._mainMode = False
-            self._timer = self._createAndStartTimer()
-            return False
-        else:
-            if self._timer is not None:
-                self._timer.cancel()
-                self._timer = self._createAndStartTimer()
-            return True
-
-    @withLock
-    def _createAndStartTimer(self):
-        timer = Timer(self._timeout, self._handleTimeout)
-        timer.setDaemon(True)
-        timer.start()
-        return timer
-
-    @withLock
-    def cancel(self):
-        if self._timer is not None:
-            self._timer.cancel()
-            self._timer = None
-        self._mainMode = True
 
 
 class Controller(object):
@@ -63,23 +14,23 @@ class Controller(object):
         self.player = player
         self.menu = menu
         self.menu.addListener(self)
-        self._timer = _ModeTimer(self)
+        self._timer = Timer(lambda: self.exitMenuMode())
         self._listener = listener
         # TODO temporary approach for initial update of display
         self._notifyListener()
 
     def select(self):
-        if self._timer.update():
+        if self._timer.start():
             self.menu.select()
         self._notifyListener()
 
     def moveBy(self, offset):
-        if self._timer.update():
+        if self._timer.start():
             self.menu.moveBy(offset)
         self._notifyListener()
 
     def back(self):
-        if self._timer.update():
+        if self._timer.start():
             if self.menu.isRoot():
                 self.exitMenuMode()
             else:
@@ -91,10 +42,10 @@ class Controller(object):
         self._notifyListener()
 
     def mode(self):
-        if self._timer.isMainMode():
-            return Mode.Player
-        else:
+        if self._timer.isRunning():
             return Mode.Menu
+        else:
+            return Mode.Player
 
     def _notifyListener(self):
         if self._listener is not None:
@@ -119,6 +70,6 @@ class Controller(object):
         return worker.runAsLoop(_handle)
 
     def asyncMenuUpdate(self, menu):
-        if self._timer.isMainMode() is False:
-            self._timer.update()
+        if self._timer.isRunning() is True:
+            self._timer.start()
             self._notifyListener()
