@@ -27,3 +27,7 @@ class Display(Size20x4):
     def clear(self):
         with self._lock:
             self._lcd.clear()
+
+    def backlight(self, on):
+        with self._lock:
+            self._lcd.backlight_enabled = on

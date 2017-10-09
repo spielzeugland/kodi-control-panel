@@ -1,6 +1,6 @@
 import menu
 import worker
-from util import Timer
+from timer import ExtensibleTimer as Timer
 
 
 class Mode(object):

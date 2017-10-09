@@ -3,6 +3,7 @@ import string
 import traceback
 import messages
 from controller import Mode
+from timer import ExtensibleTimer as Timer
 
 
 class Size20x4(object):
@@ -12,6 +13,8 @@ class Size20x4(object):
         self._rows = 4
         self._debug = False
         self._emptyLine = self._columns * " "
+        # TODO configuration: automatic backlight on/off
+        self._timer = Timer(lambda: self.backlight(on=False))
         self._currentFolder = None
         self._currentItem = None
         self._currentMode = None
@@ -31,8 +34,11 @@ class Size20x4(object):
         if modeChanged:
             if self._currentMode is Mode.Player:
                 self._writePlayer(controller)
+                self._timer.start()
             else:
                 self._writeMenu(controller)
+                self._timer.cancel()
+                self.backlight(on=True)
         elif itemChanged or folderChanged:
             self._writeMenu(controller)
 
@@ -82,6 +88,10 @@ class Size20x4(object):
 
     def close(self):
         pass
+
+    def backlight(self, on):
+        if self._debug:
+            print(">> Backlight: {0}".format(on))
 
     def _write(self, lines):
         if self._debug:

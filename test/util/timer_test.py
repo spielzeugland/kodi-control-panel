@@ -1,7 +1,7 @@
 import time
 import context
 import mocks
-from util import Timer
+from timer import ExtensibleTimer as Timer
 
 
 def someCallback():
