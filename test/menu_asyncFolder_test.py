@@ -2,13 +2,13 @@ from time import sleep
 import context
 import mocks
 import messages
-from menu import Folder, DynamicFolder
+from menu import Folder, AsyncFolder
 
 
-class DynamicFolderForTest(DynamicFolder):
+class AsyncFolderForTest(AsyncFolder):
 
     def __init__(self, name, items, delay=0):
-        super(DynamicFolderForTest, self).__init__(name)
+        super(AsyncFolderForTest, self).__init__(name)
         self._itemsToLoad = items
         self._delay = delay
         self.loadItemsCnt = 0
@@ -32,26 +32,26 @@ expectedItems = ["abc", "def"]
 
 
 def test_shouldBeSubClassOfFolder():
-    assert isinstance(DynamicFolder(""), Folder)
+    assert isinstance(AsyncFolder(""), Folder)
 
 
 def test_init_shouldTakeName():
-    folder = DynamicFolder("myName")
+    folder = AsyncFolder("myName")
     assert folder.name() == "myName"
 
 
 def test_loadItemsShouldReturnEmptyList():
-    folder = DynamicFolder("")
+    folder = AsyncFolder("")
     assert len(folder._loadItems()) == 0
 
 
 def test_shouldBeAsync():
-    folder = DynamicFolderForTest("name", expectedItems)
+    folder = AsyncFolderForTest("name", expectedItems)
     assert folder.async is True
 
 
 def test_items_withoutCallback_shouldBeSynchron():
-    folder = DynamicFolderForTest("name", expectedItems)
+    folder = AsyncFolderForTest("name", expectedItems)
     items = folder.items()
     assert items == expectedItems
     assert folder.loadItemsCnt == 1
@@ -59,14 +59,14 @@ def test_items_withoutCallback_shouldBeSynchron():
 
 def test_items_withCallback_shouldReturnNone():
     callback = CountingCallback()
-    folder = DynamicFolderForTest("name", expectedItems)
+    folder = AsyncFolderForTest("name", expectedItems)
     items = folder.items(callback.handler)
     assert items is None
 
 
 def test_items_withCallback_shouldBeAsynchron():
     callback = CountingCallback()
-    folder = DynamicFolderForTest("name", expectedItems, 0.1)
+    folder = AsyncFolderForTest("name", expectedItems, 0.1)
     items = folder.items(callback.handler)
     assert folder.loadItemsCnt == 0
     sleep(0.2)
@@ -75,7 +75,7 @@ def test_items_withCallback_shouldBeAsynchron():
 
 
 def test_items_withoutCallback_shouldReturnCachedItemsWhenCallingSecondTime():
-    folder = DynamicFolderForTest("name", expectedItems)
+    folder = AsyncFolderForTest("name", expectedItems)
     items = folder.items()
     folder.loadItemsCnt = 0  # reseting counter
     items = folder.items()
@@ -84,7 +84,7 @@ def test_items_withoutCallback_shouldReturnCachedItemsWhenCallingSecondTime():
 
 
 def test_items_withCallback_shouldReturnCachedItemsWhenCallingSecondTime():
-    folder = DynamicFolderForTest("name", expectedItems, 0.2)
+    folder = AsyncFolderForTest("name", expectedItems, 0.2)
     items = folder.items()
     folder.loadItemsCnt = 0  # reseting counter
     callback = CountingCallback()
@@ -97,7 +97,7 @@ def test_items_withCallback_shouldReturnCachedItemsWhenCallingSecondTime():
 def test_runAsyncShouldAddMessageInCaseOfError():
     messages._clear()
     someException = Exception("the exception message")
-    folder = mocks.FailingDynamicFolder("my failing folder", someException)
+    folder = mocks.FailingAsyncFolder("my failing folder", someException)
     folder._loadItemsWithoutLock()
     newMessages = messages.getUnread()
     assert len(newMessages) is 1

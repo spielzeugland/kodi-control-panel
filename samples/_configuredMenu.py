@@ -22,10 +22,10 @@ class _Action(menu.Action):
         messages.add("Message from \"%s\"" % self.name())
 
 
-class _DynamicFolder(menu.DynamicFolder):
+class _AsyncFolder(menu.AsyncFolder):
 
     def __init__(self, name, items, loadingTimeout=2):
-        super(_DynamicFolder, self).__init__(name)
+        super(_AsyncFolder, self).__init__(name)
         self._itemsToLoad = items
         self._loadingTimeout = loadingTimeout
 
@@ -38,12 +38,12 @@ def create(kodi, controllerListener):
     cdTrack1 = _Action("Track 1")
     cdTrack2 = _Action("Track 2")
     cdTrack3 = _Action("Track 3")
-    cd = _DynamicFolder("CD", [cdTrack1, cdTrack2, cdTrack3], 2)
+    cd = _AsyncFolder("CD", [cdTrack1, cdTrack2, cdTrack3], 2)
     favs = menu.Folder("Favourites", [])
     station1 = _Action("Station 1")
     station2 = _Action("Station 2")
     station3 = _Action("Station 3")
-    webradio = _DynamicFolder("Online radio", [station1, station2, station3], 5)
+    webradio = _AsyncFolder("Online radio", [station1, station2, station3], 5)
     display = menu.Folder("Display", [])
     sound = menu.Folder("Sound", [])
     longName = menu.Folder("A Folder with very long name should still be readable somehow", [])

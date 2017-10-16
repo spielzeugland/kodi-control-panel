@@ -59,10 +59,10 @@ class IncorrectFolder(menu.Folder):
         return "something which is not a list"
 
 
-class DynamicFolder(menu.DynamicFolder):
+class AsyncFolder(menu.AsyncFolder):
 
     def __init__(self, name, items, delay=0):
-        super(DynamicFolder, self).__init__(name)
+        super(AsyncFolder, self).__init__(name)
         self._itemsToLoad = items
         self._delay = delay
         self.loadItemsCnt = 0
@@ -73,20 +73,20 @@ class DynamicFolder(menu.DynamicFolder):
         return self._itemsToLoad
 
 
-class FailingDynamicFolder(menu.DynamicFolder):
+class FailingAsyncFolder(menu.AsyncFolder):
 
     def __init__(self, name, exception):
-        super(FailingDynamicFolder, self).__init__(name)
+        super(FailingAsyncFolder, self).__init__(name)
         self._exception = exception
 
     def _loadItems(self):
         raise self._exception
 
 
-class SynchronDynamicFolder(DynamicFolder):
+class SynchronAsyncFolder(AsyncFolder):
 
     def __init__(self, name, items, delay=0):
-        super(SynchronDynamicFolder, self).__init__(name, items, delay)
+        super(SynchronAsyncFolder, self).__init__(name, items, delay)
 
     def items(self, callback=None):
         items = self._loadItems()
@@ -95,7 +95,7 @@ class SynchronDynamicFolder(DynamicFolder):
         return items
 
 
-class NeverLoadingFolder(DynamicFolder):
+class NeverLoadingFolder(AsyncFolder):
 
     def __init__(self, name, items, delay=0):
         super(NeverLoadingFolder, self).__init__(name, items, delay)

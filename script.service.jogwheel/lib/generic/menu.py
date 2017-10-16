@@ -63,11 +63,11 @@ class Folder(object):
         return self._items
 
 
-class DynamicFolder(Folder):
+class AsyncFolder(Folder):
 
     @createLock
     def __init__(self, name):
-        super(DynamicFolder, self).__init__(name, None)
+        super(AsyncFolder, self).__init__(name, None)
         self.async = True
 
     @withLock

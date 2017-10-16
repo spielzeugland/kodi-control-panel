@@ -292,21 +292,21 @@ def test_reset_shouldGoToFirstItemOfMainFolder():
     assert len(menu._menuStack) == 0
 
 
-def test_select_shouldLoadDynamicFolders():
-    dynamicFolder = mocks.SynchronDynamicFolder("Dynamic", [])
-    dynamicMainFolder = mocks.Folder("Main", [dynamicFolder])
+def test_select_shouldLoadAsyncFolders():
+    asyncFolder = mocks.SynchronAsyncFolder("Dynamic", [])
+    dynamicMainFolder = mocks.Folder("Main", [asyncFolder])
     menu = Menu(dynamicMainFolder)
     menu.select()
-    assert dynamicFolder.loadItemsCnt == 1
-    assert menu._currentItems == dynamicFolder._itemsToLoad
+    assert asyncFolder.loadItemsCnt == 1
+    assert menu._currentItems == asyncFolder._itemsToLoad
 
 
 def test_select_shouldShowLoadingWhileGettingItemsAsynchronously():
-    dynamicFolder = mocks.NeverLoadingFolder("Dynamic", [])
-    dynamicMainFolder = mocks.Folder("Main", [dynamicFolder])
+    asyncFolder = mocks.NeverLoadingFolder("Dynamic", [])
+    dynamicMainFolder = mocks.Folder("Main", [asyncFolder])
     menu = Menu(dynamicMainFolder)
     menu.select()
-    assert dynamicFolder.loadItemsCnt == 0
+    assert asyncFolder.loadItemsCnt == 0
     assert menu.item() is menu._loadingItem
 
 

@@ -1,4 +1,4 @@
-from menu import DynamicFolder, Action, AsyncAction
+from menu import AsyncFolder, Action, AsyncAction
 
 
 class UrlFile(AsyncAction):
@@ -12,7 +12,7 @@ class UrlFile(AsyncAction):
         self._kodi.play(self._url)
 
 
-class UrlFolder(DynamicFolder):
+class UrlFolder(AsyncFolder):
 
     def __init__(self, kodi, name, url):
         super(UrlFolder, self).__init__(name)
@@ -38,7 +38,7 @@ class UrlFolder(DynamicFolder):
         return items
 
 
-class AddonFolder(DynamicFolder):
+class AddonFolder(AsyncFolder):
 
     def __init__(self, kodi, name="Addons", contentType="audio"):
         super(AddonFolder, self).__init__(name)
@@ -58,7 +58,7 @@ class AddonFolder(DynamicFolder):
         return items
 
 
-class FavouritesFolder(DynamicFolder):
+class FavouritesFolder(AsyncFolder):
 
     def __init__(self, kodi, name="Favourites"):
         super(FavouritesFolder, self).__init__(name)
@@ -83,7 +83,7 @@ class FavouritesFolder(DynamicFolder):
         return items
 
 
-class ChannelGroupFolder(DynamicFolder):
+class ChannelGroupFolder(AsyncFolder):
 
     def __init__(self, kodi, name, channelType):
         super(ChannelGroupFolder, self).__init__(name)
@@ -101,7 +101,7 @@ class ChannelGroupFolder(DynamicFolder):
         return items
 
 
-class ChannelFolder(DynamicFolder):
+class ChannelFolder(AsyncFolder):
 
     def __init__(self, kodi, name, groupId):
         super(ChannelFolder, self).__init__(name)
