@@ -9,10 +9,7 @@ class Kodi:
 
     def __init__(self, rpcProxy, xbmc):
         self._proxy = rpcProxy
-        if(xbmc is not None):
-            self._monitor = xbmc.Monitor()
-        else:
-            self._monitor = _SimpleMonitor()
+        self._monitor = _createMonitor(xbmc)
 
     def getAddons(self, contentType="audio"):
         response = self._proxy.Addons.GetAddons(content=contentType)
@@ -124,6 +121,24 @@ class KodiLogHandler(logging.Handler):
             return self._xbmc.LOGNOTICE
         else:
             return self._xbmc.LOGDEBUG
+
+
+def _createMonitor(xbmc):
+    if(xbmc is not None):
+
+        class CustomMonitor(xbmc.Monitor):
+
+            def __init__(self):
+                super(CustomMonitor, self).__init__()
+
+            def onNotification(self, sender, method, data):
+                # msg = ">> Notification: {0} {1} {2}".format(sender, method, data)
+                # configuredLogging.warning(msg)
+                pass
+
+        return CustomMonitor()
+    else:
+        return _SimpleMonitor()
 
 
 class _SimpleMonitor(object):
