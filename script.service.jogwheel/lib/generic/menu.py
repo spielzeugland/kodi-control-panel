@@ -16,6 +16,9 @@ class Action(object):
     def run(self, menu):
         pass
 
+    def __lt__(self, other):
+        return self._name < other.name()
+
 
 class _BackItem(Action):
 
@@ -61,6 +64,9 @@ class Folder(object):
 
     def items(self):
         return self._items
+
+    def __lt__(self, other):
+        return self._name < other.name()
 
 
 class AsyncFolder(Folder):

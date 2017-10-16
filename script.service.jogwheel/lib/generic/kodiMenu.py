@@ -1,3 +1,4 @@
+from bisect import insort
 from menu import AsyncFolder, Action, AsyncAction
 
 
@@ -53,7 +54,7 @@ class AddonFolder(AsyncFolder):
             name = details["name"]
             url = "plugin://{0}/".format(addonId)
             folder = UrlFolder(self._kodi, name, url)
-            items.append(folder)
+            insort(items, folder)
         return items
 
 
@@ -71,11 +72,11 @@ class FavouritesFolder(AsyncFolder):
             if fav["type"] == "media":
                 url = fav["path"]
                 folder = UrlFile(self._kodi, name, url)
-                items.append(folder)
+                insort(items, folder)
             elif fav["type"] == "window":
                 url = fav["windowparameter"]
                 folder = UrlFolder(self._kodi, name, url)
-                items.append(folder)
+                insort(items, folder)
             else:
                 # ignoring script&unknown for now
                 continue
