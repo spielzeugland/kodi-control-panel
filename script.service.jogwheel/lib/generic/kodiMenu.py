@@ -23,7 +23,6 @@ class UrlFolder(AsyncFolder):
         items = []
         files = self._kodi.getFiles(self._url)
         for file in files:
-            print(file)
             name = file["label"]
             url = file["file"]
             filetype = file["filetype"]
