@@ -12,7 +12,7 @@ class Kodi:
         self._monitor = _createMonitor(xbmc)
 
     def getAddons(self, contentType="audio"):
-        response = self._proxy.Addons.GetAddons(content=contentType)
+        response = self._proxy.Addons.GetAddons(content=contentType, enabled=True)
         return _noneAsEmptyList(response["addons"])
 
     def getFavourites(self):
