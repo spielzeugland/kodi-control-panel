@@ -23,3 +23,11 @@ def test_lt_shouldBeFalse():
 
 def test_lt_shouldBeFalse_forEqualName():
     assert not Action("abc") < Action("abc")
+
+
+def test_lt_shouldBeFalse_forLowerCase():
+    assert not Action("a") < Action("A")
+
+
+def test_lt_shouldBeTrue_ignoring_case():
+    assert Action("a") < Action("B")

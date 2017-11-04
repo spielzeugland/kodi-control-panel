@@ -31,6 +31,14 @@ def test_lt_shouldBeFalse_forEqualName():
     assert not Folder("abc") < Folder("abc")
 
 
+def test_lt_shouldBeFalse_forLowerCase():
+    assert not Folder("a") < Folder("A")
+
+
+def test_lt_shouldBeTrue_ignoring_case():
+    assert Folder("a") < Folder("B")
+
+
 def test_CountingFolder_withNoItems():
     f = CountingFolder("someName", [])
     assert f.name() == "someName (0)"

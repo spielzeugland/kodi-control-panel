@@ -17,7 +17,7 @@ class Action(object):
         pass
 
     def __lt__(self, other):
-        return self._name < other.name()
+        return self._name.lower() < other.name().lower()
 
 
 class _BackItem(Action):
@@ -66,7 +66,7 @@ class Folder(object):
         return self._items
 
     def __lt__(self, other):
-        return self._name < other.name()
+        return self._name.lower() < other.name().lower()
 
 
 class CountingFolder(Folder):
