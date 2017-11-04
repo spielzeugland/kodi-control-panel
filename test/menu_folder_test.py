@@ -1,6 +1,6 @@
 import context
 import mocks
-from menu import Folder
+from menu import Folder, CountingFolder
 
 
 def test_init_shouldTakeName():
@@ -29,3 +29,18 @@ def test_lt_shouldBeFalse():
 
 def test_lt_shouldBeFalse_forEqualName():
     assert not Folder("abc") < Folder("abc")
+
+
+def test_CountingFolder_withNoItems():
+    f = CountingFolder("someName", [])
+    assert f.name() == "someName (0)"
+
+
+def test_CountingFolder_withOneItem():
+    f = CountingFolder("someName", [Folder("a")])
+    assert f.name() == "someName (1)"
+
+
+def test_CountingFolder_withTwoItems():
+    f = CountingFolder("someName", [Folder("a"), Folder("b")])
+    assert f.name() == "someName (2)"

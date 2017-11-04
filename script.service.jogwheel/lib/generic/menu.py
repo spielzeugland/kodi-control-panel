@@ -69,6 +69,12 @@ class Folder(object):
         return self._name < other.name()
 
 
+class CountingFolder(Folder):
+
+    def name(self):
+        return "{0} ({1})".format(self._name, len(self._items))
+
+
 class AsyncFolder(Folder):
 
     @createLock
