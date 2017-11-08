@@ -16,17 +16,18 @@ class _Player(object):
 
 
 def create(kodi, controllerListener):
-    # TODO make configurable
+    # TODO make structure configurable
+    favs = FavouritesFolder(kodi)
 
     # channel structure is defined by the imported channel list
     tv = ChannelFolder(kodi, "TV", 1)  # use "All" for a flat list
     radio = ChannelGroupFolder(kodi, "Radio", "radio")
 
-    favs = FavouritesFolder(kodi)
-    audioAddons = AddonFolder(kodi, "Music")
     videoAddons = AddonFolder(kodi, "Video", contentType="video")
+    audioAddons = AddonFolder(kodi, "Music")
     shutdownFolder = Folder("Shutdown", [ShutdownAction(kodi, "Now"), RebootAction(kodi)])
-    rootFolder = Folder("root", [tv, radio, favs, audioAddons, videoAddons, shutdownFolder])
+
+    rootFolder = Folder("root", [favs, tv, radio, videoAddons, audioAddons, shutdownFolder])
 
     menu = Menu(rootFolder)
     controller = Controller(_Player(kodi), menu, controllerListener)
