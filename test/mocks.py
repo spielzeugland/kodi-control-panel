@@ -73,6 +73,18 @@ class AsyncFolder(menu.AsyncFolder):
         return self._itemsToLoad
 
 
+class SynchronAsyncFolder(AsyncFolder):
+
+    def __init__(self, name, items, delay=0):
+        super(SynchronAsyncFolder, self).__init__(name, items, delay)
+
+    def items(self, callback=None):
+        items = self._loadItems()
+        if callback:
+            callback(items, None)
+        return items
+
+
 class FailingAsyncFolder(menu.AsyncFolder):
 
     def __init__(self, name, exception):
@@ -83,16 +95,17 @@ class FailingAsyncFolder(menu.AsyncFolder):
         raise self._exception
 
 
-class SynchronAsyncFolder(AsyncFolder):
+class FailingSynchronAsyncFolder(SynchronAsyncFolder):
 
-    def __init__(self, name, items, delay=0):
-        super(SynchronAsyncFolder, self).__init__(name, items, delay)
+    def __init__(self, name, exception):
+        super(FailingSynchronAsyncFolder, self).__init__(name, [])
+        self._exception = exception
 
     def items(self, callback=None):
-        items = self._loadItems()
-        if callback:
-            callback(items)
-        return items
+        try:
+            raise self._exception
+        except Exception as e:
+            callback([], e)
 
 
 class NeverLoadingFolder(AsyncFolder):

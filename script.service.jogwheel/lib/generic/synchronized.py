@@ -16,3 +16,12 @@ def withLock(func):
         with self._synchronized_lock:
             return func(self, *args, **kwargs)
     return _wrapper
+
+
+def injectLock(func):
+    @wraps(func)
+    def _wrapper(self, *args, **kwargs):
+        lock = self._synchronized_lock
+        kwargs["lock"] = lock
+        return func(self, *args, **kwargs)
+    return _wrapper

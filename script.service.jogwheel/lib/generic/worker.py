@@ -1,6 +1,7 @@
 import sys
 import threading
 import messages
+import configuredLogging as logging
 
 try:
     import queue
@@ -49,6 +50,7 @@ class _Worker(threading.Thread):
             try:
                 return self._handler()
             except Exception as e:
+                logging.exception()
                 text = "Error handling event \"{0}\"".format(event["name"])
                 # switch to logging here
                 messages.add(text, None, sys.exc_info())

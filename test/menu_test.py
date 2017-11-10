@@ -1,7 +1,7 @@
 import context
 import mocks
 import messages
-from menu import Menu, Action, Folder, _BackItem
+from menu import Menu, Action, Folder, _BackItem, _RetryAction
 
 
 folder1a = mocks.Folder("F1a", [])
@@ -308,6 +308,14 @@ def test_select_shouldShowLoadingWhileGettingItemsAsynchronously():
     menu.select()
     assert asyncFolder.loadItemsCnt == 0
     assert menu.item() is menu._loadingItem
+
+
+def test_select_shouldShowRetryActionWhenLoadingFolderFailed_Asynchronously():
+    asyncFolder = mocks.FailingSynchronAsyncFolder("Dynamic", Exception(""))
+    dynamicMainFolder = mocks.Folder("Main", [asyncFolder])
+    menu = Menu(dynamicMainFolder)
+    menu.select()
+    assert isinstance(menu.item(), _RetryAction)
 
 
 def test_updateItemsForFolder_shouldDoNothingForDifferentFolder():

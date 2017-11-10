@@ -31,20 +31,24 @@ def configure(level, handler=None):
         _rootLogger.addHandler(handler)
 
 
-def error(msg, *args):
-    _rootLogger.error(msg, *args)
+def error(msg, *args, **kwargs):
+    _rootLogger.error(msg, *args, **kwargs)
 
 
-def warning(msg, *args):
-    _rootLogger.warning(msg, *args)
+def warning(msg, *args, **kwargs):
+    _rootLogger.warning(msg, *args, **kwargs)
 
 
-def info(msg, *args):
-    _rootLogger.info(msg, *args)
+def info(msg, *args, **kwargs):
+    _rootLogger.info(msg, *args, **kwargs)
 
 
-def debug(msg, *args):
-    _rootLogger.debug(msg, *args)
+def debug(msg, *args, **kwargs):
+    _rootLogger.debug(msg, *args, **kwargs)
+
+
+def exception(msg=None, *args, **kwargs):
+    _rootLogger.exception(msg, *args, **kwargs)
 
 
 DEBUG = logging.DEBUG

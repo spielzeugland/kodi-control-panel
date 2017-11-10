@@ -1,8 +1,7 @@
 from time import sleep
 import context
 import mocks
-import messages
-from menu import Folder, AsyncFolder
+from menu import Folder, AsyncFolder, _RetryAction
 
 
 class AsyncFolderForTest(AsyncFolder):
@@ -24,8 +23,8 @@ class CountingCallback(object):
     def __init__(self):
         self.calls = []
 
-    def handler(self, items):
-        self.calls.append(items)
+    def handler(self, items, error):
+        self.calls.append({"items": items, "error": error})
 
 
 expectedItems = ["abc", "def"]
@@ -71,36 +70,34 @@ def test_items_withCallback_shouldBeAsynchron():
     assert folder.loadItemsCnt == 0
     sleep(0.2)
     assert folder.loadItemsCnt == 1
-    assert callback.calls[0] == expectedItems
+    assert callback.calls[0]["items"] == expectedItems
+    assert callback.calls[0]["error"] is None
 
 
 def test_items_withoutCallback_shouldReturnCachedItemsWhenCallingSecondTime():
     folder = AsyncFolderForTest("name", expectedItems)
-    items = folder.items()
+    folder.items()
     folder.loadItemsCnt = 0  # reseting counter
     items = folder.items()
     assert items == expectedItems
     assert folder.loadItemsCnt == 0
 
 
+def test_items_withCallback_shouldForwardError():
+    callback = CountingCallback()
+    e = Exception("Some Exception")
+    folder = mocks.FailingSynchronAsyncFolder("name", e)
+    items = folder.items(callback.handler)
+    assert callback.calls[0]["error"] is e
+    assert len(callback.calls[0]["items"]) == 0
+
+
 def test_items_withCallback_shouldReturnCachedItemsWhenCallingSecondTime():
     folder = AsyncFolderForTest("name", expectedItems, 0.2)
-    items = folder.items()
+    folder.items()
     folder.loadItemsCnt = 0  # reseting counter
     callback = CountingCallback()
     items = folder.items(callback.handler)
     assert items == expectedItems
     assert folder.loadItemsCnt == 0
-    assert callback.calls[0] == expectedItems
-
-
-def test_runAsyncShouldAddMessageInCaseOfError():
-    messages._clear()
-    someException = Exception("the exception message")
-    folder = mocks.FailingAsyncFolder("my failing folder", someException)
-    folder._loadItemsWithoutLock()
-    newMessages = messages.getUnread()
-    assert len(newMessages) is 1
-    assert newMessages[0].text == "Folder \"my failing folder\" could not be loaded"
-    assert newMessages[0].details is None
-    assert newMessages[0].sysInfo[1] is someException
+    assert callback.calls[0]["items"] == expectedItems

@@ -2,7 +2,6 @@ import time
 import sys
 import traceback
 import worker
-import messages
 
 
 class Input(object):

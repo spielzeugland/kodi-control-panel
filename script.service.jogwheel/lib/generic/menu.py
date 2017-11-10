@@ -1,8 +1,9 @@
 import sys
 from threading import RLock
 import worker
-from synchronized import createLock, withLock
+from synchronized import createLock, withLock, injectLock
 import messages
+import configuredLogging as logging
 
 
 class Action(object):
@@ -82,35 +83,48 @@ class AsyncFolder(Folder):
         super(AsyncFolder, self).__init__(name, None)
         self.async = True
 
-    @withLock
-    def items(self, callback=None):
-        if self._items is not None:
+    @injectLock
+    def items(self, callback=None, lock=None):
+        with lock:
+            items = self._items
+        if items:
             if callback:
-                callback(self._items)
-            return self._items
+                callback(items, None)
+            return items
         else:
             if callback:
-                self._loadItemsAsync(callback)
-                return
+                return self._loadItemsAsync(callback)
             else:
-                self._items = self._loadItems()
-                return self._items
+                return self._loadItemsSync()
 
     def _loadItemsAsync(self, callback):
         def run():
-            self._items = self._loadItemsWithoutLock()
-            callback(self._items)
+            try:
+                callback(self._loadItemsSync(), None)
+            except Exception as e:
+                callback([], e)
         worker.run(run)
 
-    def _loadItemsWithoutLock(self):
-        try:
-            return self._loadItems()
-        except Exception as e:
-            text = "Folder \"{0}\" could not be loaded".format(self.name())
-            messages.add(text, None, sys.exc_info())
+    @injectLock
+    def _loadItemsSync(self, lock):
+        items = self._loadItems()
+        with lock:
+            self._items = items
+        return items
 
     def _loadItems(self):
         return []
+
+
+class _RetryAction(Action):
+
+    def __init__(self, text, folder, callback):
+        super(_RetryAction, self).__init__(text)
+        self._folder = folder
+        self._callback = callback
+
+    def run(self, menu):
+        self._folder.items(self._callback)
 
 
 class _EmptyItem(Action):
@@ -159,6 +173,7 @@ class Menu(object):
         try:
             newItems = folder.items()
         except Exception as e:
+            logging.exception()
             text = "Opening Folder \"{0}\" failed".format(folder.name())
             messages.add(text, None, sys.exc_info())
         if newItems is not None:
@@ -167,10 +182,19 @@ class Menu(object):
                 self._updateItemsForFolder(folder, newItems, index, False)
 
     def _setCurrentFolderAsynchron(self, folder, index):
+        def callback(newItems, error):
+            if error:
+                logging.exception()
+                text = "Opening Folder \"{0}\" failed".format(folder.name())
+                messages.add(text, None, sys.exc_info())
+                errorAction = _RetryAction("Error - Try again?", folder, callback)
+                self._updateItemsForFolder(folder, [errorAction], 0, True)
+            else:
+                self._updateItemsForFolder(folder, newItems, index, True)
         with self._folderLock:
             self._setCurrentFolderAndStoreMainFolder(folder)
             self._updateItemsForFolder(folder, [self._loadingItem], 0, False)
-        folder.items(lambda newItems: self._updateItemsForFolder(folder, newItems, index, True))
+        folder.items(callback)
 
     def _setCurrentFolderAndStoreMainFolder(self, folder):
         with self._folderLock:
@@ -222,6 +246,7 @@ class Menu(object):
             try:
                 entry.run(self)
             except Exception as e:
+                logging.exception(e)
                 text = "Action \"{0}\" executed with error".format(entry.name())
                 messages.add(text, None, sys.exc_info())
             return self

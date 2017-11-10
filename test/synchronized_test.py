@@ -1,7 +1,7 @@
 import context
-from threading import Thread
+from threading import Thread, RLock
 from time import sleep
-from synchronized import withLock, createLock
+from synchronized import withLock, createLock, injectLock
 
 
 class SomeClass():
@@ -27,6 +27,14 @@ class SomeClass():
 
     def stopWaiting(self):
         self._waiting = False
+
+    @injectLock
+    def returnInjectedLock(self, lock):
+        return lock
+
+    @injectLock
+    def returnInjectedLockWithArgs(self, a, lock):
+        return lock
 
 
 def test_decorateMethod_shouldPassValues():
@@ -55,3 +63,13 @@ def test_decoratedMethod_shouldUseLock():
     sleep(0.1)
 
     assert o.checkWaitingWasCalled is True
+
+
+def test_injectLock():
+    o = SomeClass()
+    assert o.returnInjectedLock() is o._synchronized_lock
+
+
+def test_injectLock_withAdditionalArguments():
+    o = SomeClass()
+    assert o.returnInjectedLockWithArgs("someArgument") is o._synchronized_lock
