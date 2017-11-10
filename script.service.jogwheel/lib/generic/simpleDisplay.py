@@ -51,7 +51,7 @@ class Size20x4(object):
         itemTitle = item.get("label")
         if itemTitle is None:
             itemTitle = "None"
-        lines = _asLines(itemTitle, self._columns, self._rows)
+        lines = _asLines(_sanitize(itemTitle), self._columns, self._rows)
         self._write(lines)
 
     def _writeMenu(self, controller):
@@ -67,15 +67,16 @@ class Size20x4(object):
 
         isMainMenu = len(menu._menuStack) == 1
 
+        itemName = _sanitize(item.name())
         if menu.isRoot():
             folderName = "Menu"
         else:
-            folderName = menu.mainFolder().name()[0:titleLength]
+            folderName = _sanitize(menu.mainFolder().name()[0:titleLength])
 
         spaces = (titleLength - len(folderName)) * " "
 
         line1 = "{0}{1} {2}".format(folderName, spaces, sizeInfo)
-        line2to4 = _asLines(_center(item.name(), self._columns - 2), self._columns, 3)
+        line2to4 = _asLines(_center(itemName, self._columns - 2), self._columns, 3)
         lines = [line1] + line2to4
         self._write(lines)
 
@@ -142,6 +143,10 @@ def _asLines(text, columns, rows, border=1):
 
 
 def _center(text, length):
+    return text.center(length)
+
+
+def _center_old(text, length):
         spaces = length - len(text)
         if spaces > 0:
             left = spaces // 2
@@ -149,6 +154,10 @@ def _center(text, length):
             return (left * " ") + text + (right * " ")
         else:
             return text
+
+
+def _sanitize(text):
+    return text.replace("\n", " ")
 
 
 def _printMessages():

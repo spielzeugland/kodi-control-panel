@@ -47,12 +47,14 @@ def create(kodi, controllerListener):
     display = menu.Folder("Display", [])
     sound = menu.Folder("Sound", [])
     longName = menu.Folder("A Folder with very long name should still be readable somehow", [])
+    nameWithLineBreak = menu.Folder("linebreak: a\nb", [])
+    special = menu.Folder("Edge-cases", [longName, nameWithLineBreak])
     settings = menu.Folder("Settings", [display, sound])
     shutdown = _Action("Now")
     reboot = _Action("Restart")
     end = menu.Folder("Shutdown", [shutdown, reboot])
 
-    mainFolder = menu.Folder("Main", [cd, favs, webradio, settings, longName, end])
+    mainFolder = menu.Folder("Main", [cd, favs, webradio, settings, special, end])
 
     theMenu = menu.Menu(mainFolder)
     theController = controller.Controller(_OfflinePlayer(), theMenu, controllerListener)
