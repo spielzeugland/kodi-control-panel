@@ -2,7 +2,6 @@ import sys
 from threading import RLock
 import worker
 from synchronized import createLock, withLock, injectLock
-import messages
 import configuredLogging as logging
 
 
@@ -173,9 +172,8 @@ class Menu(object):
         try:
             newItems = folder.items()
         except Exception as e:
-            logging.exception()
             text = "Opening Folder \"{0}\" failed".format(folder.name())
-            messages.add(text, None, sys.exc_info())
+            logging.exception(text)
         if newItems is not None:
             with self._folderLock:
                 self._setCurrentFolderAndStoreMainFolder(folder)
@@ -184,9 +182,8 @@ class Menu(object):
     def _setCurrentFolderAsynchron(self, folder, index):
         def callback(newItems, error):
             if error:
-                logging.exception()
                 text = "Opening Folder \"{0}\" failed".format(folder.name())
-                messages.add(text, None, sys.exc_info())
+                logging.exception(text)
                 errorAction = _RetryAction("Error - Try again?", folder, callback)
                 self._updateItemsForFolder(folder, [errorAction], 0, True)
             else:
@@ -216,11 +213,10 @@ class Menu(object):
                 else:
                     self._currentIndex = index
             if notify:
-                self._fireAsyncCallback()
+                self._fireAsyncCallback(event="update")
         else:
-            text = "Opening Folder \"{0}\" failed".format(folder.name())
-            details = "Returned items object should be of type list"  # TODO but was \"{0}\"".format(itemType)
-            messages.add(text, details)
+            text = "Opening Folder \"{0}\" failed, returned items should be of type list".format(folder.name())
+            logging.error(text)
 
     def moveBy(self, offset):
         with self._folderLock:
@@ -246,9 +242,8 @@ class Menu(object):
             try:
                 entry.run(self)
             except Exception as e:
-                logging.exception(e)
                 text = "Action \"{0}\" executed with error".format(entry.name())
-                messages.add(text, None, sys.exc_info())
+                logging.exception(text)
             return self
         else:
             with self._menuStackLock:
@@ -296,6 +291,6 @@ class Menu(object):
     def addListener(self, listener):  # not thread-safe yet
         self._listeners.append(listener)
 
-    def _fireAsyncCallback(self):
+    def _fireAsyncCallback(self, event):
         for listener in self._listeners:
-            listener.asyncMenuUpdate(self)
+            listener(self, event)

@@ -144,10 +144,10 @@ class Menu(object):
 class CountingMenuListener(object):
 
     def __init__(self):
-        self.count = 0
+        self.calls = []
 
-    def asyncMenuUpdate(self, menu):
-        self.count += 1
+    def handler(self, menu, event):
+        self.calls.append([{"event": event}])
 
 
 class Player(object):

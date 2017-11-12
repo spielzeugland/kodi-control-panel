@@ -1,7 +1,6 @@
 import math
 import string
 import traceback
-import messages
 from controller import Mode
 from timer import ExtensibleTimer as Timer
 
@@ -41,9 +40,6 @@ class Size20x4(object):
                 self.backlight(on=True)
         elif itemChanged or folderChanged:
             self._writeMenu(controller)
-
-        if self._debug:
-            _printMessages()
 
     def _writePlayer(self, controller):
         player = controller.player
@@ -158,14 +154,3 @@ def _center_old(text, length):
 
 def _sanitize(text):
     return text.replace("\n", " ")
-
-
-def _printMessages():
-    if messages.hasUnread():
-        unreadMessages = messages.getUnread()
-        if len(unreadMessages) > 0:
-            print("Messages:")
-            for message in unreadMessages:
-                print(message.text)
-                if message.sysInfo is not None:
-                    traceback.print_exception(message.sysInfo[0], message.sysInfo[1], message.sysInfo[2])

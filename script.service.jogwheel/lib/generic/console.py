@@ -28,7 +28,7 @@ class Input(object):
             elif cmd == "b":
                 self._queueEvent("longClick")
             #  elif cmd == "r":
-            #     self._controller.exitMenuMode()
+            #     self._controller._exitMenuMode()
             elif cmd == "exit":
                 self._queueEvent("veryLongClick")
                 # self.close()

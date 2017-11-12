@@ -52,4 +52,5 @@ What is missing?
 - Configuration of PINs etc.
 - Error handling, more usefull logging, etc
 - Multilanguage support
+- Player controls(pause, stop, next, prev)
 - ...

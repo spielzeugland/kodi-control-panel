@@ -12,7 +12,7 @@ class SimpleLogHandler(logging.Handler):
 
     def emit(self, record):
         msg = self.format(record)
-        print(msg)
+        print(">> Log:\n{0}".format(msg))
 
 
 def configure(debug=False):
@@ -22,4 +22,4 @@ def configure(debug=False):
     msgFormat = configuredLogging.FORMAT
     dateFormat = configuredLogging.DATE_FORMAT
     logging.basicConfig(level=level, format=msgFormat, datefmt=dateFormat)
-    configuredLogging.configure(level)
+    configuredLogging.configure(level, SimpleLogHandler())

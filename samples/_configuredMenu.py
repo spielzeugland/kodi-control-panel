@@ -4,7 +4,6 @@ from time import sleep
 import _context
 import controller
 import menu
-import messages
 
 
 class _OfflinePlayer(object):
@@ -19,7 +18,7 @@ class _Action(menu.Action):
         super(_Action, self).__init__(name)
 
     def run(self, menu):
-        messages.add("Message from \"{0}\"".format(self.name()))
+        print(">> Message from \"{0}\"".format(self.name()))
 
 
 class _AsyncFolder(menu.AsyncFolder):
@@ -42,7 +41,7 @@ class _FailingFolder(menu.AsyncFolder):
 
     def _loadItems(self):
         self._cnt = self._cnt + 1
-        msg = "Exception [{0}] from {1}".format(self._cnt, self._name)
+        msg = "Exception [{0}] from \"{1}\"".format(self._cnt, self._name)
         print(msg)
         raise Exception(msg)
 
@@ -53,7 +52,7 @@ class _FailingAction(menu.Action):
         super(_FailingAction, self).__init__(name)
 
     def run(self, menu):
-        raise Exception("Exception from from {0}".format(self.name()))
+        raise Exception("Exception from \"{0}\"".format(self.name()))
 
 
 def create(kodi, controllerListener):

@@ -1,0 +1,4 @@
+- simplify menu
+-- run all actions/folder asynchronous (using Promises)
+- let controller show/handle messages
+- check network connectivity

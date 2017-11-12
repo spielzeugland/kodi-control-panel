@@ -1,6 +1,5 @@
 import context
 import mocks
-import messages
 from menu import Menu, Action, Folder, _BackItem, _RetryAction
 
 
@@ -147,14 +146,8 @@ def test_select_shouldAddMessageForFailingAction():
     action = mocks.FailingAction("My Failing Action", someException)
     folder = mocks.Folder("Folder", [action])
     menu = Menu(folder)
-    messages._clear()
-
     menu.select()
-    newMessages = messages.getUnread()
-    assert len(newMessages) == 1
-    assert newMessages[0].text == "Action \"My Failing Action\" executed with error"
-    assert newMessages[0].details is None
-    assert newMessages[0].sysInfo[1] is someException
+    # TODO assert message
 
 
 def test_select_shouldAddMessageForFailingFolder():
@@ -162,27 +155,16 @@ def test_select_shouldAddMessageForFailingFolder():
     failingFolder = mocks.FailingFolder("my failing folder", someException)
     folder = mocks.Folder("Folder", [failingFolder])
     menu = Menu(folder)
-    messages._clear()
-
     menu.select()
-    newMessages = messages.getUnread()
-    assert len(newMessages) is 1
-    assert newMessages[0].text == "Opening Folder \"my failing folder\" failed"
-    assert newMessages[0].details is None
-    assert newMessages[0].sysInfo[1] is someException
+    # TODO assert message
 
 
 def test_select_shouldAddMessageForFolderReturningInvalidItems():
     failingFolder = mocks.IncorrectFolder("my incorrect folder")
     folder = mocks.Folder("Folder", [failingFolder])
     menu = Menu(folder)
-    messages._clear()
-
     menu.select()
-    newMessages = messages.getUnread()
-    assert len(newMessages) is 1
-    assert newMessages[0].text == "Opening Folder \"my incorrect folder\" failed"
-    assert newMessages[0].details == "Returned items object should be of type list"
+    # TODO assert message
 
 
 def test_select_shouldOpenFolder():
@@ -249,7 +231,7 @@ def test_back_doesNotNotifyListenersIfFolderNotChanged():
     menu = Menu(mainFolder)
     menu.addListener(countingListener)
     menu.back()
-    assert countingListener.count == 0
+    assert len(countingListener.calls) == 0
 
 
 def test_back_multiLevel():
@@ -328,17 +310,17 @@ def test_updateItemsForFolder_shouldDoNothingForDifferentFolder():
 def test_updateItemsForFolder_shouldCallHandler():
     countingListener = mocks.CountingMenuListener()
     menu = Menu(mainFolder)
-    menu.addListener(countingListener)
+    menu.addListener(countingListener.handler)
     menu._updateItemsForFolder(mainFolder, mainFolder.items(), 0, True)
-    assert countingListener.count == 1
+    assert len(countingListener.calls) == 1
 
 
 def test_updateItemsForFolder_shouldNotCallHandler():
     countingListener = mocks.CountingMenuListener()
     menu = Menu(mainFolder)
-    menu.addListener(countingListener)
+    menu.addListener(countingListener.handler)
     menu._updateItemsForFolder(mainFolder, mainFolder.items(), 0, False)
-    assert countingListener.count == 0
+    assert len(countingListener.calls) == 0
 
 
 def test_mainFolder_shouldReturnNoneInRootFolder():

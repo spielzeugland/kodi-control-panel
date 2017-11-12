@@ -13,31 +13,32 @@ class Controller(object):
     def __init__(self, player, menu, listener=None):
         self.player = player
         self.menu = menu
-        self.menu.addListener(self)
-        self._timer = Timer(lambda: self.exitMenuMode())
+        self._messages = []
+        self.menu.addListener(self._handleMenuUpdate)
+        self._timer = Timer(lambda: self._exitMenuMode())
         self._listener = listener
         # TODO temporary approach for initial update of display
         self._notifyListener()
 
-    def select(self):
+    def _select(self):
         if self._timer.start():
             self.menu.select()
         self._notifyListener()
 
-    def moveBy(self, offset):
+    def _moveBy(self, offset):
         if self._timer.start():
             self.menu.moveBy(offset)
         self._notifyListener()
 
-    def back(self):
+    def _back(self):
         if self._timer.start():
             if self.menu.isRoot():
-                self.exitMenuMode()
+                self._exitMenuMode()
             else:
                 self.menu.back()
                 self._notifyListener()
 
-    def exitMenuMode(self):
+    def _exitMenuMode(self):
         self._timer.cancel()
         self._notifyListener()
 
@@ -56,20 +57,20 @@ class Controller(object):
             event = queue.get()
             name = event["name"]
             if name is "moveBy":
-                self.moveBy(event["data"])
+                self._moveBy(event["data"])
                 return True
             elif name is "click":
-                self.select()
+                self._select()
                 return True
             elif name is "longClick":
-                self.back()
+                self._back()
                 return True
             elif name is "veryLongClick":
                 # TODO find better way to signal shutdown which also works with Kodi Monitors
                 return False
         return worker.runAsLoop(_handle)
 
-    def asyncMenuUpdate(self, menu):
+    def _handleMenuUpdate(self, menu, event):
         if self._timer.isRunning() is True:
             self._timer.start()
             self._notifyListener()
