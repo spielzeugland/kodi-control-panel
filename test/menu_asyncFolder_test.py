@@ -46,7 +46,7 @@ def test_loadItemsShouldReturnEmptyList():
 
 def test_shouldBeAsync():
     folder = AsyncFolderForTest("name", expectedItems)
-    assert folder.async is True
+    assert folder.isAsync is True
 
 
 def test_items_withoutCallback_shouldBeSynchron():

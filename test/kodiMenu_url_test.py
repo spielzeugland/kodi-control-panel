@@ -18,7 +18,7 @@ def test_UrlFile_name_shouldReturnName():
 def test_UrlFolder_isDynamic_shouldBeAsync():
     kodi = mocks.kodi.Kodi()
     folder = UrlFolder(kodi, "name", "url")
-    assert folder.async is True
+    assert folder.isAsync is True
 
 
 def test_UrlFolder_items_shouldReturnNoItems():

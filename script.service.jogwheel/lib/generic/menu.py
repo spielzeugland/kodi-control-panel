@@ -80,7 +80,7 @@ class AsyncFolder(Folder):
     @createLock
     def __init__(self, name):
         super(AsyncFolder, self).__init__(name, None)
-        self.async = True
+        self.isAsync = True
 
     @injectLock
     def items(self, callback=None, lock=None):
@@ -162,7 +162,7 @@ class Menu(object):
         self._setCurrentFolder(root)
 
     def _setCurrentFolder(self, folder, index=0):
-        if getattr(folder, "async", False):
+        if getattr(folder, "isAsync", False):
             self._setCurrentFolderAsynchron(folder, index)
         else:
             self._setCurrentFolderSynchron(folder, index)

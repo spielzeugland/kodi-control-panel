@@ -28,25 +28,25 @@ def test_ChannelFolder_name_shouldReturnName():
 def test_FavouritesFolder_shouldBeAsync():
     kodi = mocks.kodi.Kodi()
     folder = FavouritesFolder(kodi)
-    assert folder.async is True
+    assert folder.isAsync is True
 
 
 def test_ChannelGroupFolder_shouldBeAsync():
     kodi = mocks.kodi.Kodi()
     folder = ChannelGroupFolder(kodi, "name", "type")
-    assert folder.async is True
+    assert folder.isAsync is True
 
 
 def test_ChannelFolder_shouldBeAsync():
     kodi = mocks.kodi.Kodi()
     folder = ChannelFolder(kodi, "name", 7)
-    assert folder.async is True
+    assert folder.isAsync is True
 
 
 def test_AddonFolder_shouldBeAsync():
     kodi = mocks.kodi.Kodi()
     folder = AddonFolder(kodi)
-    assert folder.async is True
+    assert folder.isAsync is True
 
 
 def test_FavouritesFolder_items_shouldReturnNoItems():
