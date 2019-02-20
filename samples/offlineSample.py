@@ -1,7 +1,7 @@
 import _context
 import _logConfig
 import console
-import _configuredMenu as configuredMenu
+import _offlineMenu as configuredMenu
 import menu
 import worker
 import controller

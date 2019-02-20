@@ -33,13 +33,26 @@ class _AsyncFolder(menu.AsyncFolder):
         return self._itemsToLoad
 
 
-class _FailingFolder(menu.AsyncFolder):
+class _FailingAsyncFolder(menu.AsyncFolder):
+
+    def __init__(self, name):
+        super(_FailingAsyncFolder, self).__init__(name)
+        self._cnt = 0
+
+    def _loadItems(self):
+        self._cnt = self._cnt + 1
+        msg = "Exception [{0}] from \"{1}\"".format(self._cnt, self._name)
+        print(msg)
+        raise Exception(msg)
+
+
+class _FailingFolder(menu.Folder):
 
     def __init__(self, name):
         super(_FailingFolder, self).__init__(name)
         self._cnt = 0
 
-    def _loadItems(self):
+    def items(self):
         self._cnt = self._cnt + 1
         msg = "Exception [{0}] from \"{1}\"".format(self._cnt, self._name)
         print(msg)
@@ -69,9 +82,10 @@ def create(kodi, controllerListener):
     sound = menu.Folder("Sound", [])
     longName = menu.Folder("A Folder with very long name should still be readable somehow", [])
     nameWithLineBreak = menu.Folder("linebreak: a\nb", [])
+    asyncFolderWithError = _FailingAsyncFolder("async folder with error")
     folderWithError = _FailingFolder("folder with error")
     actionWithError = _FailingAction("action with error")
-    special = menu.Folder("Edge-cases", [longName, nameWithLineBreak, folderWithError, actionWithError])
+    special = menu.Folder("Edge-cases", [longName, nameWithLineBreak, asyncFolderWithError, folderWithError, actionWithError])
     settings = menu.Folder("Settings", [display, sound])
     shutdown = _Action("Now")
     reboot = _Action("Restart")

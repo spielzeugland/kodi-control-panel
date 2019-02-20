@@ -157,8 +157,8 @@ class Menu(object):
         self._folderLock = RLock()
         self._mainFolder = None
         self._currentFolder = None
-        # self._currentItems
-        # self._currentIndex
+        self._currentItems = []
+        self._currentIndex = 0
         self._setCurrentFolder(root)
 
     def _setCurrentFolder(self, folder, index=0):

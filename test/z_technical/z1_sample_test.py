@@ -1,5 +1,5 @@
 import context_samples
-import _configuredMenu
+import _offlineMenu
 import offlineSample
 import remoteSample
 
