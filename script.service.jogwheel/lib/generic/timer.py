@@ -5,10 +5,10 @@ from synchronized import createLock, withLock
 class ExtensibleTimer(object):
 
     @createLock
-    def __init__(self, handler, timeout=5):
+    def __init__(self, task, timeout=5):
         self._timer = None
         self._timeout = timeout
-        self._handler = handler
+        self._task = task
 
     @withLock
     def start(self):
@@ -29,7 +29,7 @@ class ExtensibleTimer(object):
 
     def _handleTimeout(self):
         self.cancel()
-        self._handler()
+        self._task()
 
     @withLock
     def cancel(self):

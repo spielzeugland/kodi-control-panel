@@ -56,10 +56,17 @@ class Controller(object):
         def _handle():
             event = queue.get()
             name = event["name"]
-            if name is "moveBy":
-                self._moveBy(event["data"])
-                return True
-            elif name is "click":
+            moveCount = 0
+            while name is "moveBy":
+                moveCount = moveCount + event["data"]
+                try:
+                    event = queue.get(True, 0.1)
+                    name = event["name"]
+                except:
+                    name = None
+            if moveCount is not 0:
+                self._moveBy(moveCount)
+            if name is "click":
                 self._select()
                 return True
             elif name is "longClick":

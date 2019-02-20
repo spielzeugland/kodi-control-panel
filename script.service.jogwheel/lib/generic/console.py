@@ -19,6 +19,11 @@ class Input(object):
                 self._queueEvent("moveBy", 1)
             elif cmd == "xx":
                 self._queueEvent("moveBy", 2)
+            elif cmd == "xxxx":
+                steps = 123
+                while steps > 0:
+                    self._queueEvent("moveBy", 1)
+                    steps = steps - 1
             elif cmd == "y":
                 self._queueEvent("moveBy", -1)
             elif cmd == "yy":

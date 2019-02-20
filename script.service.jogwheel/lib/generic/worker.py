@@ -26,12 +26,12 @@ def runAsLoop(workload):
 
 class _Worker(threading.Thread):
 
-    def __init__(self, handler, loop=False):
+    def __init__(self, task, loop=False):
         threading.Thread.__init__(self)
         self.daemon = True
         self._lock = threading.RLock()
         self._shouldStop = False
-        self._handler = handler
+        self._task = task
         self._loop = loop
 
     def run(self):
@@ -47,9 +47,9 @@ class _Worker(threading.Thread):
 
     def _runInternal(self):
             try:
-                return self._handler()
+                return self._task()
             except Exception as e:
-                text = "Error handling event \"{0}\"".format(event["name"])
+                text = "Error handling event"
                 logging.exception(text)
 
     def stop(self):
