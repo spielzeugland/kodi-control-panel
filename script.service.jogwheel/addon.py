@@ -1,10 +1,10 @@
 import xbmc
 import lib.generic.worker as worker
+import lib.generic.controllerWorker as controllerWorker
 import lib.generic.configuredLogging as configuredLogging
 import lib.generic.kodi as kodi
 import lib.configuredMenu as configuredMenu
-from lib.display import Display
-from lib.inputs import Inputs
+from lib.hardware import Hardware
 
 
 if __name__ == "__main__":
@@ -18,16 +18,14 @@ if __name__ == "__main__":
 
         queue = worker.createQueue()
 
-        inputs = Inputs(queue)
-        display = Display()
+        hardware = Hardware(queue)
 
-        theController = configuredMenu.create(localKodi, display.update)
-        worker = theController.work(queue)
+        controller = configuredMenu.create(localKodi, hardware.update)
+        worker = controllerWorker.start(queue, controller)
 
         monitor = localKodi.getMonitor()
         while not monitor.abortRequested():
             if monitor.waitForAbort(10):
-                display.writeMessage("Good Bye!")
                 break
             if not worker.is_alive():
                 localKodi.shutdown()

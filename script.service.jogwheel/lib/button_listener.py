@@ -3,19 +3,15 @@ import time
 import threading
 
 
-def _asEvent(name):
-    return {"name": name, "data": None}
-
-
 class ShutdownListener(threading.Thread):
 
-    def __init__(self, pin, queue):
+    def __init__(self, pin, listener):
         threading.Thread.__init__(self)
         self.daemon = True
         self._running = True
         self._lock = threading.Lock()
         self._pin = pin
-        self._queue = queue
+        self._listener = listener
         GPIO.setup(self._pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         self._count = 0
         self._delay = 0.2
@@ -54,13 +50,13 @@ class ShutdownListener(threading.Thread):
                     time.sleep(self._delay)
 
     def _click(self):
-        self._queue.put_nowait(_asEvent("click"))
+        self._listener("click")
 
     def _longClick(self):
-        self._queue.put_nowait(_asEvent("longClick"))
+        self._listener("longClick")
 
     def _veryLongClick(self):
-        self._queue.put_nowait(_asEvent("veryLongClick"))
+        self._listener("veryLongClick")
 
     def stop(self):
         with self._lock:

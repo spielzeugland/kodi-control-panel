@@ -117,11 +117,11 @@ class RotaryEncoder:
 
     class Worker(threading.Thread):
 
-        def __init__(self, a_pin, b_pin, queue, cycles=True):
+        def __init__(self, a_pin, b_pin, listener, cycles=True):
             threading.Thread.__init__(self)
             self.daemon = True
             self._lock = threading.Lock()
-            self._queue = queue
+            self._listener = listener
             self._cycles = cycles
             self._stopping = False
             self._encoder = RotaryEncoder(a_pin, b_pin)
@@ -137,7 +137,7 @@ class RotaryEncoder:
                 else:
                     delta = self._encoder.get_delta()
                 if delta is not 0:
-                    self._queue.put_nowait({"name": "moveBy", "data": delta})
+                    self._listener(delta)
                 time.sleep(self._delay)
 
         def stop(self):

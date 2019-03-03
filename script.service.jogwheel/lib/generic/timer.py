@@ -2,6 +2,7 @@ from threading import Timer
 from synchronized import createLock, withLock
 
 
+# TODO find a better name
 class ExtensibleTimer(object):
 
     @createLock

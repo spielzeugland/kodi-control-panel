@@ -1,6 +1,7 @@
 import sys
 import threading
 import configuredLogging as logging
+from synchronized import createLock, withLock
 
 try:
     import queue
@@ -12,14 +13,29 @@ def createQueue():
     return queue.Queue()
 
 
-def run(workload):
-    worker = _Worker(workload)
+class DummyQueue(object):
+
+    @createLock
+    def __init__(self):
+        self._entry = None
+
+    @withLock
+    def put_nowait(self, entry):
+        self._entry = entry
+
+    @withLock
+    def get(self):
+        return self.entry
+
+
+def run(task):
+    worker = _Worker(task)
     worker.start()
     return worker
 
 
-def runAsLoop(workload):
-    worker = _Worker(workload, True)
+def runAsLoop(task):
+    worker = _Worker(task, True)
     worker.start()
     return worker
 

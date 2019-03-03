@@ -5,6 +5,7 @@ from controller import Mode
 from timer import ExtensibleTimer as Timer
 
 
+# TODO make thread-safe
 class Size20x4(object):
 
     def __init__(self):
@@ -13,36 +14,25 @@ class Size20x4(object):
         self._debug = False
         self._emptyLine = self._columns * " "
         # TODO configuration: automatic backlight on/off
-        self._timer = Timer(lambda: self.backlight(on=False))
+        self._backlightTimer = Timer(lambda: self.backlight(on=False))
         self._currentFolder = None
         self._currentItem = None
         self._currentMode = None
 
-    def update(self, controller):
+    def update(self, event):
+        self._backlightTimer.start()
+        # TODO self.backlight(on=True)
+
         lastMode = self._currentMode
-        self._currentMode = controller.mode()
-        lastItem = self._currentItem
-        self._currentItem = controller.menu.item()
-        lastFolder = self._currentFolder
-        self._currentFolder = controller.menu.folder()
-
+        self._currentMode = event["mode"]
         modeChanged = lastMode is not self._currentMode
-        itemChanged = lastItem is not self._currentItem
-        folderChanged = lastFolder is not self._currentFolder
 
-        if modeChanged:
-            if self._currentMode is Mode.Player:
-                self._writePlayer(controller)
-                self._timer.start()
-            else:
-                self._writeMenu(controller)
-                self._timer.cancel()
-                self.backlight(on=True)
-        elif itemChanged or folderChanged:
-            self._writeMenu(controller)
+        if self._currentMode is Mode.Player:
+            self._writePlayer(event["state"])
+        elif self._currentMode is Mode.Menu:        
+            self._updateMenu(event["state"])
 
-    def _writePlayer(self, controller):
-        player = controller.player
+    def _writePlayer(self, player):
         item = player.item()
         itemTitle = item.get("label")
         if itemTitle is None:
@@ -50,24 +40,34 @@ class Size20x4(object):
         lines = _asLines(_sanitize(itemTitle), self._columns, self._rows)
         self._write(lines)
 
-    def _writeMenu(self, controller):
-        menu = controller.menu
-        item = menu.item()
-        folder = menu.folder()
+    def _updateMenu(self, menu):
+        lastItem = self._currentItem
+        self._currentItem = menu.item
+        itemChanged = lastItem is not self._currentItem
 
-        currentIndex = min(menu._currentIndex, 999)
-        itemCnt = min(len(menu._currentItems), 999)
+        lastFolder = self._currentFolder
+        self._currentFolder = menu.folder
+        folderChanged = lastFolder is not self._currentFolder
+
+        if itemChanged or folderChanged:
+            self._writeMenu(menu)
+
+    def _writeMenu(self, menu):
+        item = menu.item
+        folder = menu.folder
+        mainFolder = menu.mainFolder
+
+        currentIndex = min(menu.index, 999)
+        itemCnt = min(len(menu.items), 999)
 
         sizeInfo = "[{0}/{1}]".format(currentIndex, itemCnt)
         titleLength = self._columns - len(sizeInfo) - 1
 
-        isMainMenu = len(menu._menuStack) == 1
-
-        itemName = _sanitize(item.name())
-        if menu.isRoot():
-            folderName = "Menu"
+        if item is not None:
+            itemName = _sanitize(item.name())
         else:
-            folderName = _sanitize(menu.mainFolder().name()[0:titleLength])
+            itemName = "<None>"
+        folderName = _sanitize(mainFolder.name()[0:titleLength])
 
         spaces = (titleLength - len(folderName)) * " "
 

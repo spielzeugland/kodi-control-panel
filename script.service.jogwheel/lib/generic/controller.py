@@ -1,6 +1,11 @@
-import menu
-import worker
 from timer import ExtensibleTimer as Timer
+from synchronized import createLock, withLock
+from menu import Menu
+from menu_old import _LoadingItem
+import worker
+
+
+_LOADING_ITEM_INSTANCE = _LoadingItem()
 
 
 class Mode(object):
@@ -10,74 +15,89 @@ class Mode(object):
 
 class Controller(object):
 
-    def __init__(self, player, menu, listener=None):
-        self.player = player
-        self.menu = menu
-        self._messages = []
-        self.menu.addListener(self._handleMenuUpdate)
-        self._timer = Timer(lambda: self._exitMenuMode())
+    @createLock
+    def __init__(self, player, rootFolder, listener):
+        self._player = player
         self._listener = listener
-        # TODO temporary approach for initial update of display
-        self._notifyListener()
+        self._menu = Menu(rootFolder)
+        self._loadingItem = _LOADING_ITEM_INSTANCE
+        self._timer = Timer(lambda: self._exitMenuMode())
+        # load first level initially 
+        self._menu.enterFolder(rootFolder, [self._loadingItem])
+        self._loadFolder(rootFolder)
 
-    def _select(self):
+    @withLock
+    def moveBy(self, offset):
         if self._timer.start():
-            self.menu.select()
-        self._notifyListener()
+            self._menu.moveCurrentIndex(offset)
+        self._updateView()
 
-    def _moveBy(self, offset):
+    @withLock
+    def click(self, item):
         if self._timer.start():
-            self.menu.moveBy(offset)
-        self._notifyListener()
+            if item is not None:
+                if hasattr(item.__class__, "run") and callable(getattr(item.__class__, "run")):
+                    self._runAction(item)
+                else:
+                    self._menu.enterFolder(item, [self._loadingItem])
+                    self._loadFolder(item)
+        self._updateView()
 
-    def _back(self):
+    @withLock
+    def longClick(self):
         if self._timer.start():
-            if self.menu.isRoot():
-                self._exitMenuMode()
-            else:
-                self.menu.back()
-                self._notifyListener()
+            info = self._menu.exitFolder()
+            if info is not None:
+                self._loadFolder(info["folder"], info["index"])
+        self._updateView()
 
-    def _exitMenuMode(self):
-        self._timer.cancel()
-        self._notifyListener()
+    @withLock
+    def _updateView(self):
+        if self._timer.isRunning():
+            self._listener({
+                "mode": Mode.Menu,
+                "state": self._menu.createMenuState()
+            })
+        else:
+            self._listener({
+                "mode": Mode.Player,
+                "state": self._player
+            })
 
-    def mode(self):
+    @withLock
+    def _runAction(self, action):
+        def task():
+            # TODO error handling
+            action.run()
+        worker.run(task)
+
+    @withLock
+    def _loadFolder(self, folder, index=0):
+        def task():
+            try:
+                # TODO error handling
+                items = folder.items()
+                self._handleFolderLoaded(folder, items, index)
+            except Exception as e:
+                print(e)
+        worker.run(task)
+
+    @withLock
+    def _handleFolderLoaded(self, folder, items, index):
+        self._menu.setCurrentItems(folder, items, index) 
+        if self._timer.isRunning():
+            print("update view")
+            self._timer.start()
+            self._updateView()
+
+    @withLock
+    def _mode(self):
         if self._timer.isRunning():
             return Mode.Menu
         else:
             return Mode.Player
 
-    def _notifyListener(self):
-        if self._listener is not None:
-            self._listener(self)
-
-    def work(self, queue):
-        def _handle():
-            event = queue.get()
-            name = event["name"]
-            moveCount = 0
-            while name is "moveBy":
-                moveCount = moveCount + event["data"]
-                try:
-                    event = queue.get(True, 0.1)
-                    name = event["name"]
-                except:
-                    name = None
-            if moveCount is not 0:
-                self._moveBy(moveCount)
-            if name is "click":
-                self._select()
-                return True
-            elif name is "longClick":
-                self._back()
-                return True
-            elif name is "veryLongClick":
-                # TODO find better way to signal shutdown which also works with Kodi Monitors
-                return False
-        return worker.runAsLoop(_handle)
-
-    def _handleMenuUpdate(self, menu, event):
-        if self._timer.isRunning() is True:
-            self._timer.start()
-            self._notifyListener()
+    @withLock
+    def _exitMenuMode(self):
+        self._timer.cancel()
+        self._updateView()

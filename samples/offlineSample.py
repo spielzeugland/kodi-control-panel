@@ -1,10 +1,11 @@
 import _context
 import _logConfig
-import console
+from console import Console
 import _offlineMenu as configuredMenu
 import menu
 import worker
 import controller
+import controllerWorker
 from kodi import Kodi
 import simpleDisplay
 
@@ -20,9 +21,9 @@ if __name__ == "__main__":
 
     queue = worker.createQueue()
 
-    inputs = console.Input(queue)
     display = simpleDisplay.Size20x4()
     display._debug = _debug
+    console = Console(queue, display)
 
-    theController = configuredMenu.create(kodi, display.update)
-    theController.work(queue).join()
+    controller = configuredMenu.create(kodi, console.update)
+    controllerWorker.start(queue, controller).join()

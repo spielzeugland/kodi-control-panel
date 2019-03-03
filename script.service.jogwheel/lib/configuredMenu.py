@@ -15,7 +15,7 @@ class _Player(object):
         return item
 
 
-def create(kodi, controllerListener):
+def create(kodi, listener):
     # TODO make structure configurable
     favs = FavouritesFolder(kodi)
 
@@ -29,7 +29,6 @@ def create(kodi, controllerListener):
 
     rootFolder = Folder("root", [favs, tv, radio, videoAddons, audioAddons, shutdownFolder])
 
-    menu = Menu(rootFolder)
-    controller = Controller(_Player(kodi), menu, controllerListener)
+    controller = Controller(_Player(kodi), rootFolder, listener)
 
     return controller
